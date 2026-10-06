@@ -80,7 +80,7 @@ Placeholder-art UI on top of the rules core; 2–4 humans on one screen (bots ca
 - [x] 30-second turn timer (timeout = skip).
 - [x] Event log panel; end-of-match screen.
 
-**Done when:** four people can play a full match on one computer. *(Built and tested with scripted and bot players; waiting on a real playtest.)*
+**Done when:** four people can play a full match on one computer. *(Built and tested with scripted and bot players; waiting on a real playtest. The battle screen follows Uday's table sketch: Joker on top, collective pool in the middle with the draw and discard piles, players and their player pools around the table, fanned hand with hover details and drag-to-play.)*
 
 ---
 
