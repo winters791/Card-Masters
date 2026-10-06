@@ -11,6 +11,11 @@ const TYPE_COLORS: Dictionary[Element.Type, Color] = {
 const PANEL_COLOR: Color = Color(0.17, 0.15, 0.22)
 const HIGHLIGHT_COLOR: Color = Color(0.95, 0.80, 0.30)
 const DANGER_COLOR: Color = Color(0.85, 0.20, 0.25)
+const VALID_DROP_COLOR: Color = Color(0.45, 0.95, 0.55)
+const TABLE_COLOR: Color = Color(0.13, 0.20, 0.17)
+const POOL_COLOR: Color = Color(0.10, 0.22, 0.36)
+const PLAYER_POOL_COLOR: Color = Color(0.18, 0.30, 0.20)
+const PILE_COLOR: Color = Color(0.22, 0.20, 0.26)
 ## Drama meter scale: a full bar means "very likely the Joker's target".
 const DRAMA_BAR_MAX: int = 15
 
@@ -19,17 +24,45 @@ static func type_color(element: Element.Type) -> Color:
 	return TYPE_COLORS[element]
 
 
+## Header colour for a card: traps and Joker cards get their own colour, the rest
+## show their type.
+static func card_color(card: CardData) -> Color:
+	match card.family:
+		CardData.Family.TRAP:
+			return Color(0.12, 0.45, 0.45)
+		CardData.Family.JOKER_MODIFIER:
+			return Color(0.48, 0.22, 0.55)
+	return type_color(card.element)
+
+
+static func family_name(family: CardData.Family) -> String:
+	return {
+		CardData.Family.ATTACK: "Attack",
+		CardData.Family.DAMAGE_OVER_TIME: "Damage over time",
+		CardData.Family.TYPE_MANIPULATION: "Type change",
+		CardData.Family.DISRUPTION: "Disruption",
+		CardData.Family.HEAT_MANIPULATION: "Drama trick",
+		CardData.Family.JOKER_MODIFIER: "Joker card",
+		CardData.Family.TRAP: "Trap",
+	}[family]
+
+
+static func modifier_name(id: StringName) -> String:
+	return String(id).replace("_", " ").capitalize()
+
+
 static func player_name(seat: int) -> String:
 	return "Player %d" % (seat + 1)
 
 
-static func panel_style(color: Color, border: Color = Color(0, 0, 0, 0), border_width: int = 0) -> StyleBoxFlat:
+static func panel_style(color: Color, border: Color = Color(0, 0, 0, 0), border_width: int = 0,
+		margin: int = 8) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = color
 	style.border_color = border
 	style.set_border_width_all(border_width)
 	style.set_corner_radius_all(6)
-	style.set_content_margin_all(8)
+	style.set_content_margin_all(margin)
 	return style
 
 
@@ -53,14 +86,13 @@ static func humanize(line: String) -> String:
 	return out.replace("Heat", "Drama")
 
 
-## One-line description of a card for buttons and tooltips.
+## Short line under a card's name: type, damage and mode lock (Drama is shown apart).
 static func card_summary(card: CardData) -> String:
 	var parts: PackedStringArray = []
 	if card.element != Element.Type.NORMAL or card.family == CardData.Family.ATTACK:
 		parts.append(Element.type_name(card.element))
 	if card.params.has("damage"):
 		parts.append("%d dmg" % int(card.params["damage"]))
-	parts.append("Drama %d" % card.base_heat)
 	match card.mode_lock:
 		CardData.ModeLock.COLLECTIVE_ONLY:
 			parts.append("pool only")

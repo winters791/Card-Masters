@@ -34,38 +34,92 @@ func test_two_humans_start_behind_the_pass_screen() -> void:
 	assert_eq(screen.viewer_seat, 0)
 
 
-func test_a_human_turn_draws_plays_and_hands_over() -> void:
+func _give(screen: MatchScreen, id: StringName) -> void:
+	screen.tc.state.player(screen.tc.state.current_seat).hand.push_front(CardCatalog.by_id(id))
+	screen.select_card(-1)  # refresh the hand on screen
+
+
+func test_clicking_the_draw_pile_draws() -> void:
 	var screen: MatchScreen = _screen(["human", "human"])
 	screen.confirm_pass()
-	assert_eq(screen.submit(Intents.DrawCard.new(0)), "")
-	var hand: Array[CardData] = screen.tc.state.player(0).hand
-	hand.push_front(CardCatalog.by_id(&"ember"))
-	screen.select_card(0)
-	screen.select_mode(CardData.Mode.TARGETED)
-	screen.select_target(1)
-	assert_eq(screen.play_selected(), "")
+	assert_eq(screen.click_zone(DropZone.Kind.DRAW, -1), "")
+	assert_eq(screen.tc.state.player(0).hand.size(), 8)
+
+
+func test_dropping_on_a_players_pool_targets_them_then_the_device_moves_on() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	_give(screen, &"ember")
+	assert_true(screen.can_drop(0, DropZone.Kind.PLAYER, 1))
+	assert_false(screen.can_drop(0, DropZone.Kind.PLAYER, 0), "not at yourself")
+	assert_eq(screen.drop_card(0, DropZone.Kind.PLAYER, 1), "")
 	assert_eq(screen.tc.state.player(1).hp, 90)
-	assert_eq(screen.submit(Intents.EndTurn.new(0)), "")
+	assert_eq(screen.end_turn(), "")
 	assert_true(screen.awaiting_pass, "the next human gets the pass screen")
 	assert_eq(screen.viewer_seat, -1)
 
 
-func test_illegal_plays_show_a_message_and_change_nothing() -> void:
+func test_dropping_on_the_collective_pool_hits_everyone() -> void:
+	var screen: MatchScreen = _screen(["human", "human", "greedy"])
+	screen.confirm_pass()
+	_give(screen, &"wildfire")
+	assert_false(screen.can_drop(0, DropZone.Kind.PLAYER, 1), "Wildfire is pool only")
+	assert_eq(screen.drop_card(0, DropZone.Kind.POOL, -1), "")
+	for p: PlayerState in screen.tc.state.players:
+		assert_eq(p.hp, 85)
+
+
+func test_dropping_on_the_discard_pile_discards() -> void:
 	var screen: MatchScreen = _screen(["human", "human"])
 	screen.confirm_pass()
-	screen.tc.state.player(0).hand.push_front(CardCatalog.by_id(&"ember"))
+	_give(screen, &"ember")
+	assert_eq(screen.drop_card(0, DropZone.Kind.DISCARD, -1), "")
+	assert_eq(screen.tc.state.deck.discard_pile.back().id, &"ember")
+
+
+func test_click_a_card_then_a_pool() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	_give(screen, &"ember")
 	screen.select_card(0)
-	screen.select_mode(CardData.Mode.TARGETED)
-	assert_ne(screen.play_selected(), "", "no target chosen")
+	assert_eq(screen.selected_index, 0)
+	assert_eq(screen.click_zone(DropZone.Kind.PLAYER, 1), "")
+	assert_eq(screen.tc.state.player(1).hp, 90)
+	assert_eq(screen.selected_index, -1)
+
+
+func test_type_cards_ask_for_a_type_first() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	_give(screen, &"convert")
+	assert_eq(screen.drop_card(0, DropZone.Kind.PLAYER, 1), "")
+	assert_false(screen.pending_play.is_empty(), "type picker open")
+	assert_eq(screen.tc.state.player(1).element, Element.Type.NORMAL, "nothing played yet")
+	assert_eq(screen.choose_element(Element.Type.FIRE), "")
+	assert_eq(screen.tc.state.player(1).element, Element.Type.FIRE)
+
+
+func test_illegal_drops_are_refused_and_change_nothing() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	_give(screen, &"cataclysm")
+	assert_false(screen.can_drop(0, DropZone.Kind.POOL, -1), "Cataclysm is targeted only")
+	assert_ne(screen.drop_card(0, DropZone.Kind.POOL, -1), "")
 	assert_ne(screen.message, "")
 	assert_eq(screen.tc.state.player(1).hp, 100)
+
+
+func test_nothing_can_be_dropped_on_someone_elses_turn() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	_give(screen, &"ember")
+	assert_false(screen.can_drop(0, DropZone.Kind.PLAYER, 1), "still behind the pass screen")
 
 
 func test_one_human_never_sees_a_pass_screen() -> void:
 	var screen: MatchScreen = _screen(["human", "greedy", "random"])
 	assert_false(screen.awaiting_pass)
 	assert_eq(screen.viewer_seat, 0)
-	screen.submit(Intents.EndTurn.new(0))
+	screen.end_turn()
 	assert_eq(screen.tc.state.current_seat, 1)
 	screen.step_bot()
 	screen.step_bot()
@@ -114,3 +168,32 @@ func test_joker_preview_changes_nothing() -> void:
 	screen.tc.state.player(1).heat = 5
 	assert_eq(screen.tc.preview_joker_targets(), [1])
 	assert_eq(screen.tc.state.events.size(), events_before)
+
+
+func test_a_card_click_fires_on_release_so_drags_can_start() -> void:
+	var view := CardView.make(CardCatalog.by_id(&"ember"))
+	add_child_autofree(view)
+	watch_signals(view)
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	view._gui_input(press)
+	assert_signal_not_emitted(view, "clicked", "pressing must not rebuild the hand")
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.pressed = false
+	view._gui_input(release)
+	assert_signal_emitted(view, "clicked")
+
+
+func test_hand_cards_can_be_dragged_only_on_your_turn() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	var card: CardView = screen._hand_layer.get_child(0)
+	assert_true(card.draggable)
+	assert_eq(card.hand_index, 0)
+	screen.end_turn()
+	assert_true(screen.awaiting_pass, "player 2 is up, behind the pass screen")
+	var live: Array[Node] = screen._hand_layer.get_children().filter(
+			func(n: Node) -> bool: return not n.is_queued_for_deletion())
+	assert_true(live.is_empty(), "no hand (so nothing to drag) behind the pass screen")
