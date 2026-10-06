@@ -7,6 +7,8 @@ extends RefCounted
 const MIN_PLAYERS: int = 2
 const MAX_PLAYERS: int = 4
 const STARTING_HP: int = 100
+## Healing never takes a player above this.
+const MAX_HP: int = 100
 
 # Hand (§3)
 const STARTING_HAND_SIZE: int = 7

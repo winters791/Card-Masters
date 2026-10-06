@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"type_snare"
+display_name = "Type Snare"
+family = 6
+element = 0
+base_heat = 2
+rarity = 1
+mode_lock = 0
+effect_id = &"trap_type_snare"
+params = {
+"damage": 20
+}
+rules_text = "The next player to change type (the covered player) takes 20 damage."

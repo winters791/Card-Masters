@@ -32,6 +32,10 @@ var turn_restrictions: Array[StringName] = []
 ## Slots used by the current player this turn.
 var slots_played: Array[CardData.Slot] = []
 
+## Traps on the table, oldest first.
+var traps: Array[PlacedTrap] = []
+var next_trap_id: int = 1
+
 var winner_seat: int = -1
 var is_draw: bool = false
 
@@ -87,13 +91,23 @@ func get_view_for(viewer_seat: int) -> Dictionary:
 			"next_turn_restrictions": p.next_turn_restrictions.duplicate(),
 			"poison_rounds_left": p.poisons.map(func(s: DotStack) -> int: return s.rounds_left),
 			"burn_stacks": p.burns.size(),
+			"heal_rounds_left": p.heals.map(func(s: DotStack) -> int: return s.rounds_left),
 			"is_rotted": p.is_rotted,
 			"rooted_until_round": p.rooted_until_round,
 		}
 		if p.seat == viewer_seat:
 			view["hand"] = p.hand.duplicate()
 		player_views.append(view)
+	# Everyone sees where traps are; only the owner sees what they are.
+	var trap_views: Array[Dictionary] = []
+	for trap: PlacedTrap in traps:
+		var trap_view: Dictionary = {"trap_id": trap.trap_id, "host_seat": trap.host_seat}
+		if trap.owner_seat == viewer_seat:
+			trap_view["card"] = trap.card
+			trap_view["owner_seat"] = trap.owner_seat
+		trap_views.append(trap_view)
 	var result: Dictionary = {
+		"traps": trap_views,
 		"viewer_seat": viewer_seat,
 		"round_number": round_number,
 		"phase": phase,

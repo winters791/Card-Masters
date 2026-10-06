@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"joker_deflect"
+display_name = "Joker Deflect"
+family = 6
+element = 0
+base_heat = 2
+rarity = 1
+mode_lock = 0
+effect_id = &"trap_joker_deflect"
+params = {}
+rules_text = "The Joker would hit the covered player: the hit goes 2 living seats anticlockwise instead (no Heat reset for them)."
