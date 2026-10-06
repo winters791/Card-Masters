@@ -80,13 +80,11 @@ Run the tests before every commit. Add a test for every rule and every card.
 
 These aren't settled in `design.md` yet. Raise them when you reach the relevant roadmap item:
 
-1. **Round-end order:** damage-over-time ticks, trap triggers and the Joker attack — which order? (Design only fixes: trap Heat applies before the Joker hit.)
-2. **Joker modifier duration:** slots imply modifiers persist until replaced, but some cards say "this round" (Stand Down, Wild Card, Overcharge). Which modifiers persist?
-3. **Ties inside modifiers:** Cone hits the "top 3 Heat players" and Spotlight hits the "lowest-Heat player" — what happens on ties?
-4. **Seat-based effects with eliminated players** (e.g. Joker Deflect "2 seats anticlockwise"): skip eliminated seats?
-5. **Collective pool persistence:** current assumption is that collective cards resolve immediately (hit everyone once) and only traps remain in the pool. Confirm.
-6. **Stacking:** do multiple Scorch burns stack? Does Rot stack? Rot's exact effect needs a precise definition.
-7. **Mode lock for non-damage effects:** which effects make sense collectively (e.g. Type Swap obviously can't)? Define which cards are targeted-only.
+1. **Joker modifier duration:** slots imply modifiers persist until replaced, but some cards say "this round" (Stand Down, Wild Card, Overcharge). Which modifiers persist?
+2. **Ties inside modifiers:** Cone hits the "top 3 Heat players" and Spotlight hits the "lowest-Heat player" — what happens on ties?
+3. **Seat-based effects with eliminated players** (e.g. Joker Deflect "2 seats anticlockwise"): skip eliminated seats?
+4. **Collective pool persistence:** current assumption is that collective cards resolve immediately (hit everyone once) and only traps remain in the pool. Confirm.
+5. **Mode lock for non-damage effects:** which effects make sense collectively (e.g. Type Swap obviously can't)? Define which cards are targeted-only.
 
 ## Git
 

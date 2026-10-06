@@ -120,8 +120,10 @@ class HeatChanged extends GameEvent:
 
 
 class DamageDealt extends GameEvent:
-	## Seat of the attacker, or GameEvent.JOKER_SEAT.
+	## Seat of the attacker (or of whoever applied the poison/burn), or GameEvent.JOKER_SEAT.
 	var source_seat: int
+	## &"card", &"joker", Status.POISON or Status.BURN.
+	var cause: StringName
 	var target_seat: int
 	var element: Element.Type
 	var base_damage: int
@@ -130,7 +132,8 @@ class DamageDealt extends GameEvent:
 	var hp_after: int
 
 	func _init(p_source: int, p_target: int, p_element: Element.Type, p_base: int,
-			p_multiplier: float, p_damage: int, p_hp_after: int) -> void:
+			p_multiplier: float, p_damage: int, p_hp_after: int, p_cause: StringName) -> void:
+		cause = p_cause
 		source_seat = p_source
 		target_seat = p_target
 		element = p_element
@@ -141,8 +144,38 @@ class DamageDealt extends GameEvent:
 
 	func describe() -> String:
 		var source: String = "Joker" if source_seat == JOKER_SEAT else "Seat %d" % source_seat
-		return "%s hits seat %d for %d %s (%sx) -> %d HP" % [
-			source, target_seat, damage, Element.type_name(element), multiplier, hp_after]
+		return "%s hits seat %d for %d %s (%sx, %s) -> %d HP" % [
+			source, target_seat, damage, Element.type_name(element), multiplier, cause, hp_after]
+
+
+## A lasting effect lands on a player (see Status).
+class StatusApplied extends GameEvent:
+	var seat: int
+	var status: StringName
+	var source_seat: int
+
+	func _init(p_seat: int, p_status: StringName, p_source_seat: int) -> void:
+		seat = p_seat
+		status = p_status
+		source_seat = p_source_seat
+
+	func describe() -> String:
+		return "Seat %d gets %s (from seat %d)" % [seat, status, source_seat]
+
+
+## A lasting effect is gone: &"expired", &"type_changed" or &"triggered".
+class StatusEnded extends GameEvent:
+	var seat: int
+	var status: StringName
+	var reason: StringName
+
+	func _init(p_seat: int, p_status: StringName, p_reason: StringName) -> void:
+		seat = p_seat
+		status = p_status
+		reason = p_reason
+
+	func describe() -> String:
+		return "Seat %d loses %s (%s)" % [seat, status, reason]
 
 
 ## A player's next turn is restricted (e.g. Dry Well: no discard).

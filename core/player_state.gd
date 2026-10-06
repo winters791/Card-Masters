@@ -10,6 +10,10 @@ var is_alive: bool = true
 ## Restrictions that apply to this player's next turn (e.g. &"no_discard" from
 ## Dry Well). Moved to GameState.turn_restrictions when that turn starts.
 var next_turn_restrictions: Array[StringName] = []
+var poisons: Array[DotStack] = []
+var burns: Array[DotStack] = []
+## Rot waiting for this player's next resist.
+var is_rotted: bool = false
 
 
 func _init(p_seat: int) -> void:

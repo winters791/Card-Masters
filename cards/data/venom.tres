@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"venom"
+display_name = "Venom"
+family = 1
+element = 0
+base_heat = 1
+rarity = 0
+mode_lock = 0
+effect_id = &"poison"
+params = {
+"rounds": 3,
+"tick_damage": 5
+}
+rules_text = "Poison: 5 damage at the end of each round for 3 rounds (starting this round). Stacks."

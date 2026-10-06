@@ -28,6 +28,10 @@ const TARGETED_HEAT_MULTIPLIER: int = 2
 const DIRECT_DAMAGE_EFFECT_HEAT_BONUS: int = 1
 const SKIP_HEAT: int = 1
 
+# Damage over time and Rot (§8)
+## Rot halves the resist bonus: 0.5x becomes 0.75x.
+const ROT_RESIST_MULTIPLIER: float = 0.75
+
 # Joker (§6): damage in round r = JOKER_BASE_DAMAGE + JOKER_DAMAGE_PER_ROUND * (r - 1)
 const JOKER_BASE_DAMAGE: int = 10
 const JOKER_DAMAGE_PER_ROUND: int = 10
