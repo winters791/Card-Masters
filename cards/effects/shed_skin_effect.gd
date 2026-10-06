@@ -5,7 +5,7 @@ extends CardEffect
 ## damage uses their current type.
 
 
-# RULE-ASSUMPTION: "change your own type" means a different type than your current one.
+## Shed Skin always changes to a different type than your current one.
 func validate_play(state: GameState, intent: Intents.PlayCard) -> String:
 	if not Element.Type.values().has(intent.chosen_element):
 		return "Choose a type to change into"
