@@ -194,7 +194,8 @@ Players change the Joker's behaviour with Joker cards. Examples:
 
 - **Duration:** cards that say "this round" (Cone, Stand Down, Wild Card, Overcharge) clear after the round's Joker attack. The rest (Double Tap, Lock-On, Invert, Venom Fang) stay until another card replaces them in their slot. The Joker's type (Ignite / Flood / Overgrow) persists until changed again.
 - **Ties:** everyone tied at a cutoff is included, as with the Joker's normal tie rule. Cone can hit 4 players if two are tied for 3rd; Invert hits everyone tied for lowest.
-- **Combining slots:** the targeting card decides the order (hottest first, coldest first for Invert, random for Wild Card, locked players first for Lock-On) and the pattern decides how many from the top of that order get hit (Cone: 3).
+- **Combining slots:** the targeting card decides the order (hottest first, coldest first for Invert, random for Wild Card, locked players first for Lock-On) and the pattern decides how many from the top of that order get hit. So Cone + Invert hits the 3 coldest, Cone + Wild Card 3 random players, and Cone + Lock-On the locked players first, then the hottest others up to 3.
+- **Lock-On** counts its own card's Heat before picking, so it can lock onto the player who played it.
 - Joker modifier cards are always played into the collective pool.
 
 ---

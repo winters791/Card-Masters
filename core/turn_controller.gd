@@ -432,9 +432,9 @@ func _joker_targets() -> Array[int]:
 
 
 ## Living players ordered by the targeting slot, as groups of tied players.
-# RULE-ASSUMPTION: targeting and pattern combine through this order. Cone + Invert
-# hits the 3 coldest, Cone + Wild Card 3 random players, Cone + Lock-On the locked
-# players first and then the hottest others.
+## Targeting and pattern combine through this order: Cone + Invert hits the 3
+## coldest, Cone + Wild Card 3 random players, Cone + Lock-On the locked players
+## first and then the hottest others.
 func _joker_target_order() -> Array[Array]:
 	var joker: JokerState = state.joker
 	var alive: Array[int] = state.alive_seats()

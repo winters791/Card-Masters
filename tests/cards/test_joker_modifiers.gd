@@ -149,7 +149,7 @@ func test_lock_on_locks_everyone_tied() -> void:
 	assert_eq(tc.state.joker.targeting.locked_seats, [1, 2])
 
 
-# RULE-ASSUMPTION check: the Lock-On card's own Heat lands before it picks.
+# The Lock-On card's own Heat lands before it picks.
 func test_lock_on_can_lock_its_own_player() -> void:
 	var tc: TurnController = _match([0, 1, 1])
 	_play_joker(tc, &"lock_on")
