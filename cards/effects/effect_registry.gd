@@ -12,6 +12,8 @@ const _EFFECTS: Dictionary[StringName, GDScript] = {
 	&"convert": preload("res://cards/effects/convert_effect.gd"),
 	&"rooted": preload("res://cards/effects/rooted_effect.gd"),
 	&"shed_skin": preload("res://cards/effects/shed_skin_effect.gd"),
+	&"joker_modifier": preload("res://cards/effects/joker_modifier_effect.gd"),
+	&"joker_type": preload("res://cards/effects/joker_type_effect.gd"),
 }
 
 

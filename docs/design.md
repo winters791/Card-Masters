@@ -184,13 +184,18 @@ Players change the Joker's behaviour with Joker cards. Examples:
 - Invert (targets the **lowest**-Heat player, an anti-turtle card)
 - Change the Joker's type (a precision weapon: Heat picks *who*, type decides *how hard*)
 
-### Modifier slots (proposed)
+### Modifier slots
 
-| Slot | Rule | Examples |
+| Slot | Rule | Cards |
 |---|---|---|
-| Targeting | One at a time; new replaces old | Lock, random, invert |
-| Pattern | One at a time; new replaces old | Single, cone, double, skip |
-| Effects | Stack | Poison, burn |
+| Targeting | One at a time; new replaces old | Lock-On, Wild Card, Invert (default: hottest) |
+| Pattern | One at a time; new replaces old | Cone, Double Tap, Stand Down (default: one attack) |
+| Effects | Stack | Venom Fang, Overcharge |
+
+- **Duration:** cards that say "this round" (Cone, Stand Down, Wild Card, Overcharge) clear after the round's Joker attack. The rest (Double Tap, Lock-On, Invert, Venom Fang) stay until another card replaces them in their slot. The Joker's type (Ignite / Flood / Overgrow) persists until changed again.
+- **Ties:** everyone tied at a cutoff is included, as with the Joker's normal tie rule. Cone can hit 4 players if two are tied for 3rd; Invert hits everyone tied for lowest.
+- **Combining slots:** the targeting card decides the order (hottest first, coldest first for Invert, random for Wild Card, locked players first for Lock-On) and the pattern decides how many from the top of that order get hit (Cone: 3).
+- Joker modifier cards are always played into the collective pool.
 
 ---
 
@@ -266,15 +271,15 @@ Guardrail: these always cost you more Heat than they give.
 
 | Card | Base | Effect |
 |---|---|---|
-| Cone | 3 | Hits the top 3 Heat players this round |
-| Double Tap | 3 | Joker attacks twice |
+| Cone | 3 | Hits the top 3 Heat players this round (everyone tied at the cutoff too) |
+| Double Tap | 3 | Joker attacks twice. The second attack picks targets again after the first hit's Heat reset, so it usually hits the next-hottest player. Stays until replaced |
 | Stand Down | 2 | Joker skips this round's attack (still grows +10) |
-| Lock-On | 2 | Locks onto the current hottest player |
+| Lock-On | 2 | Locks onto whoever is hottest when it's played (everyone tied, possibly you) and hits them regardless of Heat, until replaced or they're all eliminated |
 | Wild Card | 2 | Random target this round |
-| Invert | 2 | Targets the lowest-Heat player |
+| Invert | 2 | Targets the lowest-Heat player (everyone tied). Stays until replaced |
 | Ignite / Flood / Overgrow | 2 | Sets the Joker's type to Fire / Water / Grass |
-| Venom Fang | 2 | Joker's hit also applies poison (stacks) |
-| Overcharge | 3 | +20 Joker damage this round only |
+| Venom Fang | 2 | Every Joker hit also applies Venom's poison (5 × 3 rounds). Stacks, and stays for the rest of the match |
+| Overcharge | 3 | +20 Joker damage this round only. Stacks |
 
 ### Traps (slot 1)
 

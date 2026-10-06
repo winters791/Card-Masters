@@ -151,6 +151,39 @@ func swap_elements(seat_a: int, seat_b: int) -> bool:
 	return true
 
 
+## Puts a modifier on the Joker. Targeting and pattern modifiers replace the one in
+## their slot; effects stack. Lock-On locks onto whoever is hottest right now
+## (everyone tied), so the Heat of the Lock-On card itself already counts.
+func add_joker_modifier(modifier_id: StringName, source_seat: int, params: Dictionary = {}) -> void:
+	var joker: JokerState = state.joker
+	var modifier := JokerModifier.new(modifier_id, source_seat, params)
+	var replaced: JokerModifier = null
+	match modifier.slot:
+		JokerModifier.Slot.TARGETING:
+			replaced = joker.targeting
+			joker.targeting = modifier
+		JokerModifier.Slot.PATTERN:
+			replaced = joker.pattern
+			joker.pattern = modifier
+		JokerModifier.Slot.EFFECT:
+			joker.effects.append(modifier)
+	if modifier_id == JokerModifier.LOCK_ON:
+		modifier.locked_seats = _hottest_alive()
+	if replaced != null:
+		_emit(GameEvents.JokerModifierEnded.new(replaced.id, &"replaced"))
+	_emit(GameEvents.JokerModified.new(modifier_id, source_seat,
+			replaced.id if replaced != null else &"", modifier.locked_seats.duplicate()))
+
+
+## Ignite / Flood / Overgrow: the Joker's type. Persists until changed again.
+func set_joker_element(element: Element.Type, source_seat: int) -> void:
+	var old: Element.Type = state.joker.element
+	if old == element:
+		return
+	state.joker.element = element
+	_emit(GameEvents.JokerTypeChanged.new(old, element, source_seat))
+
+
 ## Rooted: the player's type can't change until the end of the next round. Rooting
 ## again only ever extends it.
 func apply_root(seat: int, source_seat: int) -> void:
@@ -350,28 +383,127 @@ func _end_round() -> void:
 		_resolve_eliminations()
 		if state.is_over():
 			return
+	_expire_joker_modifiers()
 	_expire_roots()
 	_emit(GameEvents.RoundEnded.new(state.round_number))
 	_start_round(state.round_number + 1)
 
 
-## The Joker hits every living player tied for the most Heat, for full damage each
-## (§5). Heat resets only for players actually hit.
+## The Joker's round-end attack, shaped by its modifiers (§6). By default it hits
+## every living player tied for the most Heat, for full damage each (§5). Heat
+## resets only for players actually hit.
 func _joker_attack() -> void:
-	var alive: Array[int] = state.alive_seats()
-	var max_heat: int = -1
-	for seat: int in alive:
-		max_heat = maxi(max_heat, state.player(seat).heat)
-	var targets: Array[int] = []
-	for seat: int in alive:
-		if state.player(seat).heat == max_heat:
-			targets.append(seat)
+	var joker: JokerState = state.joker
+	if joker.pattern_id() == JokerModifier.STAND_DOWN:
+		_emit(GameEvents.JokerStoodDown.new(state.round_number))
+		return
+	var attacks: int = 2 if joker.pattern_id() == JokerModifier.DOUBLE_TAP else 1
+	var damage: int = state.joker_damage() + joker.bonus_damage()
+	for attack_number: int in range(1, attacks + 1):
+		# Double Tap's second attack picks targets again, after the first hit's Heat reset.
+		if attack_number > 1:
+			_resolve_eliminations()
+			if state.is_over():
+				return
+		var targets: Array[int] = _joker_targets()
+		if targets.is_empty():
+			return
+		_emit(GameEvents.JokerAttacked.new(state.round_number, joker.element, damage, targets, attack_number))
+		for seat: int in targets:
+			deal_damage(GameEvent.JOKER_SEAT, seat, damage, joker.element, &"joker")
+			_set_heat(state.player(seat), 0, &"joker_hit")
+			for fang: JokerModifier in joker.effects_with_id(JokerModifier.VENOM_FANG):
+				apply_poison(seat, int(fang.params.get("tick_damage", 0)), int(fang.params.get("rounds", 0)),
+						fang.source_seat)
 
-	var damage: int = state.joker_damage()
-	_emit(GameEvents.JokerAttacked.new(state.round_number, state.joker.element, damage, targets))
-	for seat: int in targets:
-		deal_damage(GameEvent.JOKER_SEAT, seat, damage, state.joker.element, &"joker")
-		_set_heat(state.player(seat), 0, &"joker_hit")
+
+## Who the Joker hits: the first group of its targeting order (everyone tied), or
+## for Cone the top 3, widened to include everyone tied at the cutoff.
+func _joker_targets() -> Array[int]:
+	var groups: Array[Array] = _joker_target_order()
+	var wanted: int = 3 if state.joker.pattern_id() == JokerModifier.CONE else 1
+	var targets: Array[int] = []
+	for group: Array in groups:
+		if targets.size() >= wanted:
+			break
+		for seat: int in group:
+			targets.append(seat)
+	return targets
+
+
+## Living players ordered by the targeting slot, as groups of tied players.
+# RULE-ASSUMPTION: targeting and pattern combine through this order. Cone + Invert
+# hits the 3 coldest, Cone + Wild Card 3 random players, Cone + Lock-On the locked
+# players first and then the hottest others.
+func _joker_target_order() -> Array[Array]:
+	var joker: JokerState = state.joker
+	var alive: Array[int] = state.alive_seats()
+	match joker.targeting_id():
+		JokerModifier.INVERT:
+			return _group_by_heat(alive, false)
+		JokerModifier.WILD_CARD:
+			var shuffled: Array[int] = alive.duplicate()
+			for i: int in range(shuffled.size() - 1, 0, -1):
+				var j: int = state.rng.randi_range(0, i)
+				var tmp: int = shuffled[i]
+				shuffled[i] = shuffled[j]
+				shuffled[j] = tmp
+			var singles: Array[Array] = []
+			for seat: int in shuffled:
+				singles.append([seat])
+			return singles
+		JokerModifier.LOCK_ON:
+			var locked: Array[int] = joker.targeting.locked_seats.filter(
+					func(seat: int) -> bool: return state.player(seat).is_alive)
+			if locked.is_empty():
+				joker.targeting = null
+				_emit(GameEvents.JokerModifierEnded.new(JokerModifier.LOCK_ON, &"lock_lost"))
+				return _group_by_heat(alive, true)
+			var others: Array[int] = alive.filter(func(seat: int) -> bool: return not locked.has(seat))
+			var order: Array[Array] = [locked]
+			order.append_array(_group_by_heat(others, true))
+			return order
+	return _group_by_heat(alive, true)
+
+
+## Seats grouped by equal Heat, hottest first (or coldest first).
+func _group_by_heat(seats: Array[int], hottest_first: bool) -> Array[Array]:
+	var by_heat: Dictionary[int, Array] = {}
+	for seat: int in seats:
+		var heat: int = state.player(seat).heat
+		if not by_heat.has(heat):
+			by_heat[heat] = []
+		by_heat[heat].append(seat)
+	var heats: Array[int] = by_heat.keys()
+	heats.sort()
+	if hottest_first:
+		heats.reverse()
+	var groups: Array[Array] = []
+	for heat: int in heats:
+		groups.append(by_heat[heat])
+	return groups
+
+
+func _hottest_alive() -> Array[int]:
+	var groups: Array[Array] = _group_by_heat(state.alive_seats(), true)
+	var hottest: Array[int] = []
+	if not groups.is_empty():
+		hottest.assign(groups[0])
+	return hottest
+
+
+## "This round" modifiers (Cone, Stand Down, Wild Card, Overcharge) clear after the
+## round's Joker attack.
+func _expire_joker_modifiers() -> void:
+	var joker: JokerState = state.joker
+	for modifier: JokerModifier in joker.all_modifiers():
+		if modifier.one_round:
+			_emit(GameEvents.JokerModifierEnded.new(modifier.id, &"expired"))
+	if joker.targeting != null and joker.targeting.one_round:
+		joker.targeting = null
+	if joker.pattern != null and joker.pattern.one_round:
+		joker.pattern = null
+	joker.effects = joker.effects.filter(func(m: JokerModifier) -> bool: return not m.one_round)
 
 
 ## Damage over time is untyped (Normal, so always 1x) and each stack is its own hit.

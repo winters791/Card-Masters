@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"cone"
+display_name = "Cone"
+family = 5
+element = 0
+base_heat = 3
+rarity = 2
+mode_lock = 1
+effect_id = &"joker_modifier"
+params = {
+"modifier": &"cone"
+}
+rules_text = "This round the Joker hits the top 3 Heat players (everyone tied at the cutoff too)."

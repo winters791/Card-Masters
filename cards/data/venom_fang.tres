@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"venom_fang"
+display_name = "Venom Fang"
+family = 5
+element = 0
+base_heat = 2
+rarity = 1
+mode_lock = 1
+effect_id = &"joker_modifier"
+params = {
+"modifier": &"venom_fang",
+"rounds": 3,
+"tick_damage": 5
+}
+rules_text = "Every Joker hit also poisons (5 per round for 3 rounds). Stacks."

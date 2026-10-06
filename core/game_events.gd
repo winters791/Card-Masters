@@ -242,15 +242,76 @@ class JokerAttacked extends GameEvent:
 	var element: Element.Type
 	var damage: int
 	var target_seats: Array[int]
+	## 1, or 2 for Double Tap's second attack.
+	var attack_number: int
 
-	func _init(p_round: int, p_element: Element.Type, p_damage: int, p_targets: Array[int]) -> void:
+	func _init(p_round: int, p_element: Element.Type, p_damage: int, p_targets: Array[int],
+			p_attack_number: int = 1) -> void:
 		round_number = p_round
 		element = p_element
 		damage = p_damage
 		target_seats = p_targets
+		attack_number = p_attack_number
 
 	func describe() -> String:
 		return "Joker attacks seats %s for %d" % [str(target_seats), damage]
+
+
+## Stand Down: the Joker skips this round's attack.
+class JokerStoodDown extends GameEvent:
+	var round_number: int
+
+	func _init(p_round: int) -> void:
+		round_number = p_round
+
+	func describe() -> String:
+		return "The Joker stands down in round %d" % round_number
+
+
+class JokerModified extends GameEvent:
+	var modifier_id: StringName
+	var source_seat: int
+	## The modifier it replaced in its slot, or &"".
+	var replaced_id: StringName
+	## Lock-On only.
+	var locked_seats: Array[int]
+
+	func _init(p_id: StringName, p_source: int, p_replaced: StringName, p_locked: Array[int]) -> void:
+		modifier_id = p_id
+		source_seat = p_source
+		replaced_id = p_replaced
+		locked_seats = p_locked
+
+	func describe() -> String:
+		return "Seat %d gives the Joker %s" % [source_seat, modifier_id]
+
+
+## A modifier left the Joker: &"expired" (end of round), &"replaced" or
+## &"lock_lost" (every locked player is gone).
+class JokerModifierEnded extends GameEvent:
+	var modifier_id: StringName
+	var reason: StringName
+
+	func _init(p_id: StringName, p_reason: StringName) -> void:
+		modifier_id = p_id
+		reason = p_reason
+
+	func describe() -> String:
+		return "Joker loses %s (%s)" % [modifier_id, reason]
+
+
+class JokerTypeChanged extends GameEvent:
+	var old_element: Element.Type
+	var new_element: Element.Type
+	var source_seat: int
+
+	func _init(p_old: Element.Type, p_new: Element.Type, p_source: int) -> void:
+		old_element = p_old
+		new_element = p_new
+		source_seat = p_source
+
+	func describe() -> String:
+		return "Seat %d turns the Joker %s" % [source_seat, Element.type_name(new_element)]
 
 
 class PlayerEliminated extends GameEvent:
