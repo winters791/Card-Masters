@@ -72,15 +72,15 @@ Cheap AI players so the numbers can be tested without humans.
 
 Placeholder-art UI on top of the rules core; 2–4 humans on one screen (bots can fill seats).
 
-- [ ] Table layout: player seats with HP, type (colour-coded terrain placeholder), Drama (Heat) meter.
-- [ ] Hand view with pass-the-device screen between turns (hand hidden from others).
-- [ ] Two play slots, mode picker (collective / targeted), target picker.
-- [ ] Collective pool in the middle; face-down trap markers showing where traps sit.
-- [ ] Joker (host) display: current damage, type, modifier slots, who it will hit.
-- [ ] 30-second turn timer (timeout = skip).
-- [ ] Event log panel; end-of-match screen.
+- [x] Table layout: player seats with HP, type (colour-coded terrain placeholder), Drama (Heat) meter.
+- [x] Hand view with pass-the-device screen between turns (hand hidden from others).
+- [x] Two play slots, mode picker (collective / targeted), target picker.
+- [x] Collective pool in the middle; face-down trap markers showing where traps sit.
+- [x] Joker (host) display: current damage, type, modifier slots, who it will hit.
+- [x] 30-second turn timer (timeout = skip).
+- [x] Event log panel; end-of-match screen.
 
-**Done when:** four people can play a full match on one computer.
+**Done when:** four people can play a full match on one computer. *(Built and tested with scripted and bot players; waiting on a real playtest.)*
 
 ---
 

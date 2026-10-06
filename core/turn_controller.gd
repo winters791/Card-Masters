@@ -252,6 +252,17 @@ func restrict_next_turn(seat: int, restriction: StringName) -> void:
 	_emit(GameEvents.TurnRestricted.new(seat, restriction))
 
 
+## Who the Joker would hit if the round ended now, from public information only (so
+## hidden traps like Joker Deflect are ignored). Empty for Stand Down, and for Wild
+## Card since its target is random. Changes nothing.
+func preview_joker_targets() -> Array[int]:
+	var none: Array[int] = []
+	if state.is_over() or state.joker.pattern_id() == JokerModifier.STAND_DOWN \
+			or state.joker.targeting_id() == JokerModifier.WILD_CARD:
+		return none
+	return _joker_targets(false)
+
+
 func add_heat(seat: int, amount: int, reason: StringName) -> void:
 	var p: PlayerState = state.player(seat)
 	_set_heat(p, p.heat + amount, reason)
@@ -541,8 +552,8 @@ func _joker_hit(seat: int, damage: int) -> void:
 
 ## Who the Joker hits: the first group of its targeting order (everyone tied), or
 ## for Cone the top 3, widened to include everyone tied at the cutoff.
-func _joker_targets() -> Array[int]:
-	var groups: Array[Array] = _joker_target_order()
+func _joker_targets(apply: bool = true) -> Array[int]:
+	var groups: Array[Array] = _joker_target_order(apply)
 	var wanted: int = 3 if state.joker.pattern_id() == JokerModifier.CONE else 1
 	var targets: Array[int] = []
 	for group: Array in groups:
@@ -557,7 +568,8 @@ func _joker_targets() -> Array[int]:
 ## Targeting and pattern combine through this order: Cone + Invert hits the 3
 ## coldest, Cone + Wild Card 3 random players, Cone + Lock-On the locked players
 ## first and then the hottest others.
-func _joker_target_order() -> Array[Array]:
+## With apply = false (previews) nothing is changed, e.g. a lost lock isn't cleared.
+func _joker_target_order(apply: bool = true) -> Array[Array]:
 	var joker: JokerState = state.joker
 	var alive: Array[int] = state.alive_seats()
 	match joker.targeting_id():
@@ -578,8 +590,9 @@ func _joker_target_order() -> Array[Array]:
 			var locked: Array[int] = joker.targeting.locked_seats.filter(
 					func(seat: int) -> bool: return state.player(seat).is_alive)
 			if locked.is_empty():
-				joker.targeting = null
-				_emit(GameEvents.JokerModifierEnded.new(JokerModifier.LOCK_ON, &"lock_lost"))
+				if apply:
+					joker.targeting = null
+					_emit(GameEvents.JokerModifierEnded.new(JokerModifier.LOCK_ON, &"lock_lost"))
 				return _group_by_heat(alive, true)
 			var others: Array[int] = alive.filter(func(seat: int) -> bool: return not locked.has(seat))
 			var order: Array[Array] = [locked]
