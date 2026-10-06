@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"ember"
+display_name = "Ember"
+family = 0
+element = 3
+base_heat = 1
+rarity = 0
+mode_lock = 0
+effect_id = &"attack"
+params = {
+"damage": 10
+}
+rules_text = "10 Fire damage."

@@ -17,4 +17,4 @@ This repo holds the **Godot 4.x prototype**.
 
 ## Status
 
-Phase 0 (project setup) done: Godot 4.7 project, folder layout, GUT tests. Next up: Phase 1, the headless rules core.
+Phase 1 done: a headless rules core that plays full matches with the five attack cards (turns, draw/keep, Heat, the Joker, elimination, event log). Next up: Phase 2, the rest of the card families.

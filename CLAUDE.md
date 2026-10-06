@@ -23,7 +23,7 @@ For small gaps that block coding, pick the simplest reading, mark it in code wit
 
 ## Tech stack
 
-- **Godot 4.7.x, GDScript only** (no C#). Statically typed GDScript (`var hp: int`, typed function signatures) everywhere; the project warns on untyped declarations, so keep the test output warning-free.
+- **Godot 4.7.x, GDScript only** (no C#). Statically typed GDScript (`var hp: int`, typed function signatures) everywhere; the editor warns on untyped declarations (headless runs don't print GDScript warnings, so check new code yourself).
 - **GUT 9.7.1** (Godot Unit Test, the release for Godot 4.7) for tests, vendored in `addons/gut/`. Test files are `tests/**/test_*.gd` extending `GutTest` (see `.gutconfig.json`).
 - 2D only. Placeholder art (coloured rects/labels) until Phase 7.
 
@@ -48,6 +48,7 @@ Conventions:
 - **Data-driven cards:** each card is a `.tres` of a `CardData` resource (id, name, family, slot, element type, base_heat, rarity, mode_lock, effect params). Effects live in small scripts keyed by family/effect id; avoid one giant `match` over card names.
 - **Traps use the event system:** a trap subscribes to an event pattern and fires when matched. Placement is public, effect is hidden until it fires.
 - **Hidden information** (hands, trap effects) is filtered per viewer by a `get_view_for(player_id)` function, so hotseat and later networking share one code path.
+- Concrete events are inner classes of `GameEvents` (`GameEvents.DamageDealt`), intents of `Intents` (`Intents.PlayCard`); `TurnController.submit(intent)` returns `""` or the rejection reason.
 - Magic numbers (HP 100, Joker +10, hand sizes, timer 30s, multipliers) live in one `core/config.gd`, not scattered through code. Balancing will change them.
 
 ## Commands
@@ -68,6 +69,8 @@ godot --headless --path . --check-only -s res://core/some_script.gd
 # Run the game
 godot --path .
 ```
+
+After a GUT run, Godot may print `ObjectDB instances were leaked at exit` followed by `resources still in use`. That's GUT's own scenes and scripts not being freed at exit under some script load orders (Godot 4.7.2 + GUT 9.7.1), not a game leak: the same matches run outside GUT exit clean. Judge a run by its summary and exit code.
 
 In Claude Code cloud sessions, `.claude/hooks/session-start.sh` installs the pinned Godot binary (`godot` on PATH) and runs the import step automatically. When upgrading Godot, bump `GODOT_VERSION` there, `config/features` in `project.godot`, and GUT to the matching release.
 

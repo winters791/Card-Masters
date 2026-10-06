@@ -23,15 +23,15 @@ Each phase ends with something runnable. Tick boxes as work lands.
 
 Pure game logic that can play a whole match in code. Every rule here gets unit tests.
 
-- [ ] `GameState`, `PlayerState` (HP 100, type, Heat, hand, alive/eliminated).
-- [ ] Type chart and multipliers (Grass → Water → Fire → Grass, Normal neutral; 2x / 0.5x / 1x).
-- [ ] Shared deck: build from card data with copies by rarity, shuffle with a **seeded RNG**, reshuffle discard pile when empty.
-- [ ] Dealing: 7-card starting hand; each turn draw 3, keep 2, discard 1; hand cap 10.
-- [ ] Turn loop: sequential turns, starting seat rotates each round, up to 1 slot-1 card + 1 slot-2 card, skip = +1 Heat.
-- [ ] Heat formula: Base × mode (collective 1x, targeted 2x), +1 after multiplier for effects with direct damage.
-- [ ] Joker (round end): Normal type, damage 10 + 10 per round, hits highest Heat; ties hit all tied players for full damage; Heat resets to 0 only on an actual hit.
-- [ ] Elimination; win when one player remains; **draw** when the last two die to the same hit.
-- [ ] Event log of everything that happens (used later by UI, bots and debugging).
+- [x] `GameState`, `PlayerState` (HP 100, type, Heat, hand, alive/eliminated).
+- [x] Type chart and multipliers (Grass → Water → Fire → Grass, Normal neutral; 2x / 0.5x / 1x).
+- [x] Shared deck: build from card data with copies by rarity, shuffle with a **seeded RNG**, reshuffle discard pile when empty.
+- [x] Dealing: 7-card starting hand; each turn draw 3, keep 2, discard 1; hand cap 10.
+- [x] Turn loop: sequential turns, starting seat rotates each round, up to 1 slot-1 card + 1 slot-2 card, skip = +1 Heat.
+- [x] Heat formula: Base × mode (collective 1x, targeted 2x), +1 after multiplier for effects with direct damage.
+- [x] Joker (round end): Normal type, damage 10 + 10 per round, hits highest Heat; ties hit all tied players for full damage; Heat resets to 0 only on an actual hit.
+- [x] Elimination; win when one player remains; **draw** when the last two die to the same hit.
+- [x] Event log of everything that happens (used later by UI, bots and debugging).
 
 **Done when:** a test can script a full match from seed to winner using only plain attacks.
 
@@ -41,8 +41,8 @@ Pure game logic that can play a whole match in code. Every rule here gets unit t
 
 Data-driven cards, implemented family by family in this order (each family playable before starting the next):
 
-- [ ] Card data format (custom `Resource` per card: id, name, family, slot, type, base Heat, rarity, mode lock, effect params).
-- [ ] **Attacks:** Ember, Thornlash, Tidal Crash, Wildfire (collective only), Cataclysm (targeted only).
+- [x] Card data format (custom `Resource` per card: id, name, family, slot, type, base Heat, rarity, mode lock, effect params).
+- [x] **Attacks:** Ember, Thornlash, Tidal Crash, Wildfire (collective only), Cataclysm (targeted only).
 - [ ] **Damage over time:** Venom (stacking poison), Scorch (burn until type change), Rot.
 - [ ] **Type manipulation:** Type Swap, Convert, Rooted, Shed Skin.
 - [ ] **Joker modifiers** with the three slots (targeting replaces, pattern replaces, effects stack): Cone, Double Tap, Stand Down, Lock-On, Wild Card, Invert, Ignite / Flood / Overgrow, Venom Fang, Overcharge.
