@@ -17,4 +17,4 @@ This repo holds the **Godot 4.x prototype**.
 
 ## Status
 
-Design complete for a first prototype. Implementation starting at Phase 0 of the roadmap.
+Phase 0 (project setup) done: Godot 4.7 project, folder layout, GUT tests. Next up: Phase 1, the headless rules core.

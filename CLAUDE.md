@@ -23,8 +23,8 @@ For small gaps that block coding, pick the simplest reading, mark it in code wit
 
 ## Tech stack
 
-- **Godot 4.x, GDScript only** (no C#). Statically typed GDScript (`var hp: int`, typed function signatures) everywhere.
-- **GUT** (Godot Unit Test) for tests, in `addons/gut/`.
+- **Godot 4.7.x, GDScript only** (no C#). Statically typed GDScript (`var hp: int`, typed function signatures) everywhere; the project warns on untyped declarations, so keep the test output warning-free.
+- **GUT 9.7.1** (Godot Unit Test, the release for Godot 4.7) for tests, vendored in `addons/gut/`. Test files are `tests/**/test_*.gd` extending `GutTest` (see `.gutconfig.json`).
 - 2D only. Placeholder art (coloured rects/labels) until Phase 7.
 
 ## Architecture
@@ -53,12 +53,23 @@ Conventions:
 ## Commands
 
 ```bash
-# Run all tests headless (after GUT is installed)
+# First time on a fresh clone (no .godot/ yet): import so class_names and GUT resolve
+godot --headless --import --path .
+
+# Run all tests headless (exit code 0 = all passed)
 godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
+
+# Run one test file / one test
+godot --headless -s addons/gut/gut_cmdln.gd -gtest=res://tests/test_project_setup.gd -gunit_test_name=test_main_scene_instantiates -gexit
+
+# Parse-check a single script (non-zero exit on syntax/type errors)
+godot --headless --path . --check-only -s res://core/some_script.gd
 
 # Run the game
 godot --path .
 ```
+
+In Claude Code cloud sessions, `.claude/hooks/session-start.sh` installs the pinned Godot binary (`godot` on PATH) and runs the import step automatically. When upgrading Godot, bump `GODOT_VERSION` there, `config/features` in `project.godot`, and GUT to the matching release.
 
 Run the tests before every commit. Add a test for every rule and every card.
 
