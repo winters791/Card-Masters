@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"dry_well"
+display_name = "Dry Well"
+family = 3
+element = 0
+base_heat = 1
+rarity = 0
+mode_lock = 0
+effect_id = &"restrict_next_turn"
+params = {
+"restriction": &"no_discard"
+}
+rules_text = "On their next turn the target can't discard: they keep every card they draw, and with a full hand they can't draw at all."

@@ -145,6 +145,19 @@ class DamageDealt extends GameEvent:
 			source, target_seat, damage, Element.type_name(element), multiplier, hp_after]
 
 
+## A player's next turn is restricted (e.g. Dry Well: no discard).
+class TurnRestricted extends GameEvent:
+	var seat: int
+	var restriction: StringName
+
+	func _init(p_seat: int, p_restriction: StringName) -> void:
+		seat = p_seat
+		restriction = p_restriction
+
+	func describe() -> String:
+		return "Seat %d's next turn is restricted: %s" % [seat, restriction]
+
+
 class PlayerSkipped extends GameEvent:
 	var seat: int
 
