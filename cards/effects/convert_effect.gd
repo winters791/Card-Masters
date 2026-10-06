@@ -3,6 +3,10 @@ extends CardEffect
 ## Convert: every target becomes the type the player chose. Rooted targets resist.
 
 
+func needs_element_choice() -> bool:
+	return true
+
+
 func validate_play(_state: GameState, intent: Intents.PlayCard) -> String:
 	if not Element.Type.values().has(intent.chosen_element):
 		return "Choose a type to convert to"

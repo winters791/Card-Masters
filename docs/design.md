@@ -101,7 +101,7 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 
 ### Pools
 
-- **Collective pool:** effects hit **every** player, including the one who played it. Gets stronger as your type advantages line up with what's in the pool.
+- **Collective pool:** effects hit **every** player, including the one who played it. A collective card resolves once, straight away, against every living player; only traps stay in the pool afterwards. Collective plays get stronger as your type advantages line up with the other players' types.
 - **Targeted (opponent) pool:** effects hit **one** chosen player.
 - **The player picks the mode** when playing a card. A few cards are printed as locked to one mode (e.g. Wildfire, Cataclysm).
 

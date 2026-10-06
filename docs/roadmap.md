@@ -59,12 +59,12 @@ Data-driven cards, implemented family by family in this order (each family playa
 
 Cheap AI players so the numbers can be tested without humans.
 
-- [ ] `RandomBot`: plays any legal move.
-- [ ] `GreedyBot`: simple heuristics (avoid being highest Heat, exploit type advantages, use collective cards when resisted).
-- [ ] Headless simulation runner: N matches with given seeds/player counts → CSV/JSON summary.
-- [ ] Report: match length in rounds, elimination round per seat, win rate per seat (checks rotation fairness), Heat distribution, how often the Joker kills vs cards, draw rate, card play frequency.
+- [x] `RandomBot`: plays any legal move.
+- [x] `GreedyBot`: simple heuristics (avoid being highest Heat, exploit type advantages, use collective cards when resisted).
+- [x] Headless simulation runner: N matches with given seeds/player counts → CSV/JSON summary.
+- [x] Report: match length in rounds, elimination round per seat, win rate per seat (checks rotation fairness), Heat distribution, how often the Joker kills vs cards, draw rate, card play frequency.
 
-**Done when:** one command simulates 1,000 matches and prints the summary.
+**Done when:** one command simulates 1,000 matches and prints the summary. *(Done: ~23 s for 1,000 four-player matches; first baseline in `docs/playtests/2026-10-06-first-simulation.md`.)*
 
 ---
 
