@@ -6,7 +6,7 @@ extends RefCounted
 var state: GameState
 
 
-## Sets up a match and starts round 1 (seat 0 is already holding its draw).
+## Sets up a match and starts round 1 (seat 0 is up, in the draw step).
 ## deck_cards are the physical cards (see Deck.build_card_list). Pass
 ## shuffle = false to keep their order, e.g. in tests: deck_cards[0] is dealt first.
 func _init(match_seed: int, player_count: int, deck_cards: Array[CardData], shuffle: bool = true) -> void:
@@ -29,15 +29,13 @@ func validate(intent: Intent) -> String:
 		return "The match is over"
 	if intent.seat != state.current_seat:
 		return "It is not seat %d's turn" % intent.seat
-	if intent is Intents.KeepCards:
-		return _validate_keep(intent as Intents.KeepCards)
+	if intent is Intents.DrawCard:
+		return _validate_draw()
+	if intent is Intents.DiscardCard:
+		return _validate_discard(intent as Intents.DiscardCard)
 	if intent is Intents.PlayCard:
 		return _validate_play(intent as Intents.PlayCard)
-	if intent is Intents.EndTurn:
-		if state.phase != GameState.Phase.PLAY:
-			return "Choose which cards to keep first"
-		return ""
-	if intent is Intents.Timeout:
+	if intent is Intents.EndTurn or intent is Intents.Timeout:
 		return ""
 	return "Unknown intent"
 
@@ -47,21 +45,26 @@ func submit(intent: Intent) -> String:
 	var error: String = validate(intent)
 	if not error.is_empty():
 		return error
-	if intent is Intents.KeepCards:
-		_apply_keep((intent as Intents.KeepCards).keep_indices)
+	if intent is Intents.DrawCard:
+		_apply_draw()
+	elif intent is Intents.DiscardCard:
+		_apply_discard((intent as Intents.DiscardCard).hand_index)
 	elif intent is Intents.PlayCard:
 		_apply_play(intent as Intents.PlayCard)
-	elif intent is Intents.EndTurn:
+	elif intent is Intents.EndTurn or intent is Intents.Timeout:
+		# A timeout just ends the turn; anything drawn so far stays in hand.
 		_end_turn()
-	elif intent is Intents.Timeout:
-		_apply_timeout()
 	return ""
 
 
-## How many of the pending drawn cards the current player must keep.
-func keep_count() -> int:
-	var room: int = maxi(0, Config.HAND_CAP - state.current_player().hand.size())
-	return mini(mini(Config.KEEP_PER_TURN, state.pending_draw.size()), room)
+func can_draw() -> bool:
+	return _validate_draw().is_empty()
+
+
+func can_discard() -> bool:
+	return state.phase == GameState.Phase.DRAW \
+			and state.discards_this_turn < Config.MAX_DISCARDS_PER_TURN \
+			and not state.current_player().hand.is_empty()
 
 
 ## Deals typed damage to a living player. Eliminations are resolved by the caller
@@ -84,25 +87,29 @@ func add_heat(seat: int, amount: int, reason: StringName) -> void:
 
 # --- Validation ------------------------------------------------------------
 
-func _validate_keep(intent: Intents.KeepCards) -> String:
-	if state.phase != GameState.Phase.KEEP:
-		return "Not choosing cards to keep right now"
-	var needed: int = keep_count()
-	if intent.keep_indices.size() != needed:
-		return "Must keep exactly %d card(s)" % needed
-	var seen: Dictionary[int, bool] = {}
-	for index: int in intent.keep_indices:
-		if index < 0 or index >= state.pending_draw.size():
-			return "Keep index %d is out of range" % index
-		if seen.has(index):
-			return "Keep index %d is repeated" % index
-		seen[index] = true
+func _validate_draw() -> String:
+	if state.phase != GameState.Phase.DRAW:
+		return "Drawing is over once you play a card"
+	if state.draws_this_turn >= Config.MAX_DRAWS_PER_TURN:
+		return "Already drew %d cards this turn" % Config.MAX_DRAWS_PER_TURN
+	if state.current_player().hand.size() >= Config.HAND_CAP:
+		return "Hand is full (%d): discard a card first" % Config.HAND_CAP
+	if state.deck.draw_pile.is_empty() and state.deck.discard_pile.is_empty():
+		return "No cards left to draw"
+	return ""
+
+
+func _validate_discard(intent: Intents.DiscardCard) -> String:
+	if state.phase != GameState.Phase.DRAW:
+		return "Discarding is over once you play a card"
+	if state.discards_this_turn >= Config.MAX_DISCARDS_PER_TURN:
+		return "Already discarded this turn"
+	if intent.hand_index < 0 or intent.hand_index >= state.current_player().hand.size():
+		return "Hand index %d is out of range" % intent.hand_index
 	return ""
 
 
 func _validate_play(intent: Intents.PlayCard) -> String:
-	if state.phase != GameState.Phase.PLAY:
-		return "Choose which cards to keep first"
 	var hand: Array[CardData] = state.current_player().hand
 	if intent.hand_index < 0 or intent.hand_index >= hand.size():
 		return "Hand index %d is out of range" % intent.hand_index
@@ -144,9 +151,9 @@ func _start_round(round_number: int) -> void:
 	_start_next_turn()
 
 
-## Seat 1 starts round 1, seat 2 round 2, and so on (§3).
-# RULE-ASSUMPTION: rotation follows the original seat numbers; if the scheduled
-# seat is eliminated, the next living seat clockwise starts instead.
+## Seat 1 starts round 1, seat 2 round 2, and so on (§3). Rotation follows the
+## original seat numbers; if the scheduled seat is eliminated, the next living seat
+## clockwise starts instead.
 func _starting_seat(round_number: int) -> int:
 	var count: int = state.players.size()
 	for offset: int in count:
@@ -166,42 +173,39 @@ func _start_next_turn() -> void:
 	_end_round()
 
 
-# RULE-ASSUMPTION: the draw-3-keep-2 step happens at the start of the turn, before
-# any card is played.
+## Each turn opens with the draw step (§3): draw up to 3 cards one at a time and
+## optionally discard 1 card from hand, in any order. Playing a card ends it.
 func _begin_turn(seat: int) -> void:
 	state.current_seat = seat
 	state.slots_played.clear()
+	state.draws_this_turn = 0
+	state.discards_this_turn = 0
+	state.phase = GameState.Phase.DRAW
 	_emit(GameEvents.TurnStarted.new(seat))
-	state.pending_draw = _draw(Config.DRAW_PER_TURN)
-	_emit(GameEvents.CardsDrawn.new(seat, state.pending_draw.duplicate()))
-	state.phase = GameState.Phase.KEEP
-	# Nothing to choose (hand at the cap, or the deck is empty): skip straight to play.
-	if keep_count() == 0:
-		var none: Array[int] = []
-		_apply_keep(none)
 
 
-# RULE-ASSUMPTION: the hand cap is enforced at the keep step. A player near the cap
-# keeps only as many drawn cards as fit; the rest are discarded.
-func _apply_keep(keep_indices: Array[int]) -> void:
+func _apply_draw() -> void:
 	var p: PlayerState = state.current_player()
-	var discarded: Array[CardData] = []
-	for i: int in state.pending_draw.size():
-		if keep_indices.has(i):
-			continue
-		discarded.append(state.pending_draw[i])
-	for index: int in keep_indices:
-		p.hand.append(state.pending_draw[index])
-	state.deck.discard(discarded)
-	state.pending_draw.clear()
-	_emit(GameEvents.CardsKept.new(p.seat, keep_indices.size(), discarded.size()))
-	state.phase = GameState.Phase.PLAY
+	var drawn: Array[CardData] = _draw(1)
+	p.hand.append_array(drawn)
+	state.draws_this_turn += 1
+	_emit(GameEvents.CardsDrawn.new(p.seat, drawn))
+
+
+func _apply_discard(hand_index: int) -> void:
+	var p: PlayerState = state.current_player()
+	var card: CardData = p.hand[hand_index]
+	p.hand.remove_at(hand_index)
+	state.deck.discard([card])
+	state.discards_this_turn += 1
+	_emit(GameEvents.CardDiscarded.new(p.seat, card))
 
 
 func _apply_play(intent: Intents.PlayCard) -> void:
 	var p: PlayerState = state.current_player()
 	var card: CardData = p.hand[intent.hand_index]
 	p.hand.remove_at(intent.hand_index)
+	state.phase = GameState.Phase.PLAY
 	state.slots_played.append(card.slot())
 
 	var targets: Array[int] = []
@@ -224,17 +228,8 @@ func _apply_play(intent: Intents.PlayCard) -> void:
 		_end_turn()
 
 
-# RULE-ASSUMPTION: a timeout keeps the first drawn cards if the keep choice is still
-# open, then ends the turn. It only costs skip Heat if no card was played.
-func _apply_timeout() -> void:
-	if state.phase == GameState.Phase.KEEP:
-		var first: Array[int] = []
-		for i: int in keep_count():
-			first.append(i)
-		_apply_keep(first)
-	_end_turn()
-
-
+## Ending the turn without playing a card is a skip (+1 Heat). A timeout counts the
+## same way: it is only a skip if nothing was played.
 func _end_turn() -> void:
 	var p: PlayerState = state.current_player()
 	if state.slots_played.is_empty() and p.is_alive:
@@ -275,9 +270,8 @@ func _joker_attack() -> void:
 # --- Elimination and match end -------------------------------------------------
 
 ## Eliminates everyone at 0 HP at once. If that leaves one player, they win; if it
-## leaves nobody, the match is a draw (§7).
-# RULE-ASSUMPTION: "the last two die to the same hit" generalises to any number of
-# remaining players dying to one card or one Joker attack.
+## leaves nobody (all remaining players died to the same card or Joker attack), the
+## match is a draw (§7).
 func _resolve_eliminations() -> void:
 	var eliminated_any: bool = false
 	for p: PlayerState in state.players:
@@ -298,7 +292,6 @@ func _finish(winner_seat: int, is_draw: bool) -> void:
 	state.winner_seat = winner_seat
 	state.is_draw = is_draw
 	state.phase = GameState.Phase.OVER
-	state.pending_draw.clear()
 	_emit(GameEvents.MatchEnded.new(winner_seat, is_draw))
 
 

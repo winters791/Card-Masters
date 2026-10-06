@@ -87,6 +87,7 @@ These aren't settled in `design.md` yet. Raise them when you reach the relevant 
 5. **Collective pool persistence:** current assumption is that collective cards resolve immediately (hit everyone once) and only traps remain in the pool. Confirm.
 6. **Stacking:** do multiple Scorch burns stack? Does Rot stack? Rot's exact effect needs a precise definition.
 7. **Mode lock for non-damage effects:** which effects make sense collectively (e.g. Type Swap obviously can't)? Define which cards are targeted-only.
+8. **Dry Well vs the new draw step:** its text ("draws 3, keeps 1 next turn instead of 2") predates the sequential draw step (up to 3 draws, optional discard, net up to +3). What should it do now, e.g. "can draw at most 1 card next turn"?
 
 ## Git
 

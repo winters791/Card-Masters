@@ -1,6 +1,6 @@
 # Card Masters — Design Doc
 
-*Working title: Card Masters · Status: core rules, first card batch and theme direction done · Last updated: 6 Oct 2026*
+*Working title: Card Masters · Status: core rules, first card batch and theme direction done · Last updated: 6 Oct 2026 (draw step, rounding, seat rotation, draws)*
 
 ---
 
@@ -45,6 +45,7 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 | **Normal** | 1x | 1x | 1x | 1x |
 
 - **Strong:** 2x · **Resisted:** 0.5x · **Same type / neutral:** 1x
+- **Rounding:** fractional damage rounds down (15 at 0.5x = 7).
 - Every hit has a type: card hits are labelled with their type, and Joker hits use the Joker's current type.
 - Players change type only through effect cards (e.g. swapping types with another player), so changing type always costs Heat.
 
@@ -52,8 +53,8 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 
 ## 3. Turn structure
 
-- **Sequential turns.** The **starting seat rotates every round** (seat 1 starts round 1, seat 2 starts round 2, …).
-- **Turn timer:** 30 seconds. Running out of time counts as a **skip**.
+- **Sequential turns.** The **starting seat rotates every round** (seat 1 starts round 1, seat 2 starts round 2, …). Rotation follows the original seat numbers: if the scheduled seat is eliminated, the next living seat clockwise starts instead (so a seat can occasionally start two rounds in a row).
+- **Turn timer:** 30 seconds. Running out of time **ends your turn**; cards drawn so far stay in your hand. It counts as a **skip** only if you haven't played a card.
 - **Per turn, play up to 2 cards:** one from each slot (below).
 - **Skipping is allowed**, but costs Heat (see §5) and forgoes setting traps or changing type.
 
@@ -70,8 +71,10 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 ### Hand
 
 - **Starting hand:** 7 cards.
-- **Each turn (including skips):** draw 3, keep 2, discard 1.
-- **Hand cap:** 10. Excess cards are discarded (they do **not** go into any pool).
+- **Draw step (start of every turn, including skips):** draw **up to 3 cards, one at a time**; you can stop at any point, even before drawing any. You may also **discard 1 card from your hand** (any card, drawn this turn or older) at any point during the step. Discarding is optional, so a turn can net up to +3 cards.
+- **Draw, then play:** playing your first card ends the draw step.
+- **Hand cap:** 10. At 10 cards you **can't draw until you discard**. With one discard per turn, a full hand gets at most one new card per turn.
+- Discarded cards go face up to the shared discard pile (they do **not** go into any pool).
 
 ### Decks
 
@@ -88,7 +91,7 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 | Legendary | Hand-picked (Cataclysm) | 1 | 1 | 1 |
 | **Total** | | **37** | | **117** |
 
-*Watch in playtesting:* Ignite / Flood / Overgrow give 9 Joker type-changers in the deck, and uncommons make up more than half of it.
+*Watch in playtesting:* Ignite / Flood / Overgrow give 9 Joker type-changers in the deck, and uncommons make up more than half of it. With up to 3 draws a turn, card flow may be faster than the ~150-card estimate.
 
 - **No pay-to-win.** Anything purchasable is **cosmetic** or a **sidegrade** (different, not stronger), such as card art, terrain skins and host voice packs.
 
@@ -191,7 +194,7 @@ Players change the Joker's behaviour with Joker cards. Examples:
 
 ## 7. Elimination and match length
 
-- **Elimination is final.** If the last two players die to the same hit, the game is a **draw**.
+- **Elimination is final.** If all remaining players die to the same hit (one card or one Joker attack), the game is a **draw**.
 - Eliminated players can stay as **ghosts to spectate**, or leave without losing any rewards. Nobody should feel pushed to stay in a game they're no longer playing.
 - **Target match length:** ~20 minutes.
 

@@ -14,7 +14,6 @@ func _card(id: StringName) -> CardData:
 func _play(card: CardData, mode: CardData.Mode, defender: Element.Type = Element.Type.NORMAL) -> TurnController:
 	var tc: TurnController = Fixtures.new_match(3)
 	tc.state.player(1).element = defender
-	Fixtures.keep_first(tc)
 	Fixtures.give(tc, 0, card)
 	var target: int = 1 if mode == CardData.Mode.TARGETED else -1
 	assert_eq(tc.submit(Intents.PlayCard.new(0, 0, mode, target)), "")
@@ -74,7 +73,6 @@ func test_tidal_crash() -> void:
 
 func test_wildfire_is_collective_only() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
-	Fixtures.keep_first(tc)
 	Fixtures.give(tc, 0, _card(&"wildfire"))
 	assert_ne(tc.submit(Intents.PlayCard.new(0, 0, CardData.Mode.TARGETED, 1)), "")
 	assert_eq(tc.submit(Intents.PlayCard.new(0, 0, CardData.Mode.COLLECTIVE)), "")
@@ -85,7 +83,6 @@ func test_wildfire_is_collective_only() -> void:
 
 func test_cataclysm_is_targeted_only() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
-	Fixtures.keep_first(tc)
 	Fixtures.give(tc, 0, _card(&"cataclysm"))
 	assert_ne(tc.submit(Intents.PlayCard.new(0, 0, CardData.Mode.COLLECTIVE)), "")
 	assert_eq(tc.submit(Intents.PlayCard.new(0, 0, CardData.Mode.TARGETED, 2)), "")

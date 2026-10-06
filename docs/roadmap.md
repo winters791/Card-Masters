@@ -26,7 +26,7 @@ Pure game logic that can play a whole match in code. Every rule here gets unit t
 - [x] `GameState`, `PlayerState` (HP 100, type, Heat, hand, alive/eliminated).
 - [x] Type chart and multipliers (Grass → Water → Fire → Grass, Normal neutral; 2x / 0.5x / 1x).
 - [x] Shared deck: build from card data with copies by rarity, shuffle with a **seeded RNG**, reshuffle discard pile when empty.
-- [x] Dealing: 7-card starting hand; each turn draw 3, keep 2, discard 1; hand cap 10.
+- [x] Dealing: 7-card starting hand; draw step of up to 3 sequential draws plus 1 optional discard; hand cap 10 (discard before drawing at the cap).
 - [x] Turn loop: sequential turns, starting seat rotates each round, up to 1 slot-1 card + 1 slot-2 card, skip = +1 Heat.
 - [x] Heat formula: Base × mode (collective 1x, targeted 2x), +1 after multiplier for effects with direct damage.
 - [x] Joker (round end): Normal type, damage 10 + 10 per round, hits highest Heat; ties hit all tied players for full damage; Heat resets to 0 only on an actual hit.

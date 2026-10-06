@@ -17,7 +17,6 @@ static func multiplier(attacker: Element.Type, defender: Element.Type) -> float:
 	return Config.NEUTRAL_MULTIPLIER
 
 
-## Final damage of a typed hit.
-# RULE-ASSUMPTION: fractional damage (e.g. 15 at 0.5x = 7.5) rounds down.
+## Final damage of a typed hit. Fractional damage rounds down (15 at 0.5x = 7).
 static func apply(base_damage: int, attacker: Element.Type, defender: Element.Type) -> int:
 	return floori(base_damage * multiplier(attacker, defender))

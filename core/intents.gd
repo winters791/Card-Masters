@@ -3,16 +3,22 @@ extends RefCounted
 ## What players (UI or bots) can ask the core to do. The core validates and applies.
 
 
-## Choose which of the freshly drawn cards to keep; the rest are discarded.
-class KeepCards extends Intent:
-	## Indices into GameState.pending_draw.
-	var keep_indices: Array[int]
-
-	func _init(p_seat: int, p_keep_indices: Array[int]) -> void:
+## Draw one card (draw step only; up to 3 per turn, not while holding 10).
+class DrawCard extends Intent:
+	func _init(p_seat: int) -> void:
 		seat = p_seat
-		keep_indices = p_keep_indices
 
 
+## Discard any card from your hand (draw step only; once per turn).
+class DiscardCard extends Intent:
+	var hand_index: int
+
+	func _init(p_seat: int, p_hand_index: int) -> void:
+		seat = p_seat
+		hand_index = p_hand_index
+
+
+## Play a card. The first play ends the draw step.
 class PlayCard extends Intent:
 	var hand_index: int
 	var mode: CardData.Mode
@@ -32,7 +38,7 @@ class EndTurn extends Intent:
 		seat = p_seat
 
 
-## The 30-second turn timer ran out (§3).
+## The 30-second turn timer ran out (§3). Ends the turn like EndTurn.
 class Timeout extends Intent:
 	func _init(p_seat: int) -> void:
 		seat = p_seat

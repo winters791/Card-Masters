@@ -53,20 +53,21 @@ func test_joker_can_decide_the_winner() -> void:
 	assert_eq(tc.state.winner_seat, 1)
 
 
-func test_view_hides_other_hands_and_draws() -> void:
+func test_view_hides_other_hands() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
+	Fixtures.draw(tc, 1)
 	var mine: Dictionary = tc.state.get_view_for(0)
 	var theirs: Dictionary = tc.state.get_view_for(1)
-	assert_true(mine["players"][0].has("hand"))
+	assert_eq(mine["players"][0]["hand"].size(), 8)
 	assert_false(mine["players"][1].has("hand"))
 	assert_eq(mine["players"][1]["hand_size"], 7)
-	assert_true(mine.has("pending_draw"))
-	assert_false(theirs.has("pending_draw"))
 	assert_false(theirs["players"][0].has("hand"))
+	assert_eq(theirs["players"][0]["hand_size"], 8)
 
 
 func test_event_view_hides_drawn_cards_from_others() -> void:
 	var tc: TurnController = Fixtures.new_match(2)
+	Fixtures.draw(tc, 1)
 	var own_draw: GameEvents.CardsDrawn = null
 	var other_draw: GameEvents.CardsDrawn = null
 	for event: GameEvent in tc.state.get_events_for(0):
@@ -75,16 +76,17 @@ func test_event_view_hides_drawn_cards_from_others() -> void:
 	for event: GameEvent in tc.state.get_events_for(1):
 		if event is GameEvents.CardsDrawn:
 			other_draw = event
-	assert_eq(own_draw.cards.size(), 3)
+	assert_eq(own_draw.cards.size(), 1)
 	assert_eq(other_draw.cards.size(), 0)
-	assert_eq(other_draw.count, 3)
+	assert_eq(other_draw.count, 1)
 
 
 # --- Full matches with real cards ------------------------------------------------
 
-## Plays a whole match with a simple scripted policy: keep the first cards, then
-## play the first card in hand at the next living seat (collectively if the card
-## is locked to it). Returns the controller once the match is over.
+## Plays a whole match with a simple scripted policy: draw while allowed (up to 3,
+## discarding the oldest card once if the hand is full), then play the first card in
+## hand at the next living seat (collectively if the card is locked to it).
+## Returns the controller once the match is over.
 func _play_scripted_match(match_seed: int, player_count: int) -> TurnController:
 	var deck: Array[CardData] = []
 	for i: int in 4:
@@ -94,9 +96,13 @@ func _play_scripted_match(match_seed: int, player_count: int) -> TurnController:
 	while not tc.state.is_over() and guard < 2000:
 		guard += 1
 		var seat: int = tc.state.current_seat
-		if tc.state.phase == GameState.Phase.KEEP:
-			assert_eq(Fixtures.keep_first(tc), "")
-			continue
+		if tc.state.phase == GameState.Phase.DRAW:
+			if tc.can_draw():
+				assert_eq(tc.submit(Intents.DrawCard.new(seat)), "")
+				continue
+			if tc.state.player(seat).hand.size() >= Config.HAND_CAP and tc.can_discard():
+				assert_eq(tc.submit(Intents.DiscardCard.new(seat, 0)), "")
+				continue
 		var hand: Array[CardData] = tc.state.player(seat).hand
 		if hand.is_empty():
 			tc.submit(Intents.EndTurn.new(seat))

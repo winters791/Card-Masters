@@ -26,17 +26,18 @@ static func filler_deck(count: int = 80) -> Array[CardData]:
 	return cards
 
 
-## A match with an unshuffled filler deck. Seat 0 is up and must choose what to keep.
+## A match with an unshuffled filler deck. Seat 0 is up, in the draw step.
 static func new_match(player_count: int = 2, deck: Array[CardData] = filler_deck()) -> TurnController:
 	return TurnController.new(1, player_count, deck, false)
 
 
-## Keeps the first allowed drawn cards for the current player.
-static func keep_first(tc: TurnController) -> String:
-	var indices: Array[int] = []
-	for i: int in tc.keep_count():
-		indices.append(i)
-	return tc.submit(Intents.KeepCards.new(tc.state.current_seat, indices))
+## The current player draws `count` cards one at a time. Returns the first rejection, if any.
+static func draw(tc: TurnController, count: int) -> String:
+	for i: int in count:
+		var error: String = tc.submit(Intents.DrawCard.new(tc.state.current_seat))
+		if not error.is_empty():
+			return error
+	return ""
 
 
 ## Puts `card` at the front of the current player's hand (index 0).
@@ -44,18 +45,14 @@ static func give(tc: TurnController, seat: int, card: CardData) -> void:
 	tc.state.player(seat).hand.push_front(card)
 
 
-## The current player keeps the default cards and ends the turn without playing (a skip).
+## The current player ends the turn without playing (a skip).
 static func skip_turn(tc: TurnController) -> void:
-	if tc.state.phase == GameState.Phase.KEEP:
-		keep_first(tc)
 	tc.submit(Intents.EndTurn.new(tc.state.current_seat))
 
 
 ## Plays `card` from the current player, at `target_seat` (or collectively if -1), then ends the turn.
 static func play_and_end(tc: TurnController, card: CardData, target_seat: int = -1) -> String:
 	var seat: int = tc.state.current_seat
-	if tc.state.phase == GameState.Phase.KEEP:
-		keep_first(tc)
 	give(tc, seat, card)
 	var mode: CardData.Mode = CardData.Mode.COLLECTIVE if target_seat < 0 else CardData.Mode.TARGETED
 	var error: String = tc.submit(Intents.PlayCard.new(seat, 0, mode, target_seat))

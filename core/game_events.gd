@@ -38,7 +38,7 @@ class TurnStarted extends GameEvent:
 		return "Seat %d's turn" % seat
 
 
-## Cards drawn are private to the drawer; everyone else only sees the count.
+## Drawn cards are private to the drawer; everyone else only sees the count.
 class CardsDrawn extends GameEvent:
 	var seat: int
 	var count: int
@@ -61,18 +61,17 @@ class CardsDrawn extends GameEvent:
 		return "Seat %d draws %d" % [seat, count]
 
 
-class CardsKept extends GameEvent:
+## Discards land face up on the discard pile, so they are public.
+class CardDiscarded extends GameEvent:
 	var seat: int
-	var kept_count: int
-	var discarded_count: int
+	var card: CardData
 
-	func _init(p_seat: int, p_kept: int, p_discarded: int) -> void:
+	func _init(p_seat: int, p_card: CardData) -> void:
 		seat = p_seat
-		kept_count = p_kept
-		discarded_count = p_discarded
+		card = p_card
 
 	func describe() -> String:
-		return "Seat %d keeps %d, discards %d" % [seat, kept_count, discarded_count]
+		return "Seat %d discards %s" % [seat, card.display_name]
 
 
 class DeckReshuffled extends GameEvent:

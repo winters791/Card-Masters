@@ -4,8 +4,8 @@ extends RefCounted
 ## read-only helpers and per-viewer filtering.
 
 enum Phase {
-	## The current player is choosing which drawn cards to keep.
-	KEEP,
+	## The current player may draw and discard (or start playing, which ends drawing).
+	DRAW,
 	## The current player may play cards or end their turn.
 	PLAY,
 	OVER,
@@ -20,12 +20,13 @@ var joker: JokerState = JokerState.new()
 var events: Array[GameEvent] = []
 
 var round_number: int = 0
-var phase: Phase = Phase.KEEP
+var phase: Phase = Phase.DRAW
 var current_seat: int = -1
 ## Seats still to act this round, in order (the current seat is already removed).
 var turn_queue: Array[int] = []
-## Cards drawn this turn, waiting for the keep decision. Private to current_seat.
-var pending_draw: Array[CardData] = []
+## Draw step counters for the current turn.
+var draws_this_turn: int = 0
+var discards_this_turn: int = 0
 ## Slots used by the current player this turn.
 var slots_played: Array[CardData.Slot] = []
 
@@ -65,8 +66,8 @@ func joker_damage() -> int:
 	return JokerState.damage_for_round(round_number)
 
 
-## Everything `viewer_seat` is allowed to know. Hands and pending draws of other
-## players are reduced to counts. Use -1 for a spectator who sees no hands.
+## Everything `viewer_seat` is allowed to know. Other players' hands are reduced to
+## counts. Use -1 for a spectator who sees no hands.
 func get_view_for(viewer_seat: int) -> Dictionary:
 	var player_views: Array[Dictionary] = []
 	for p: PlayerState in players:
@@ -90,12 +91,11 @@ func get_view_for(viewer_seat: int) -> Dictionary:
 		"joker": {"element": joker.element, "damage": joker_damage()},
 		"draw_pile_size": deck.draw_pile.size(),
 		"discard_pile": deck.discard_pile.duplicate(),
-		"pending_draw_size": pending_draw.size(),
+		"draws_this_turn": draws_this_turn,
+		"discards_this_turn": discards_this_turn,
 		"winner_seat": winner_seat,
 		"is_draw": is_draw,
 	}
-	if viewer_seat == current_seat:
-		result["pending_draw"] = pending_draw.duplicate()
 	return result
 
 

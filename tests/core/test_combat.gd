@@ -65,7 +65,6 @@ func test_player_at_zero_hp_is_eliminated() -> void:
 func test_killing_yourself_with_a_collective_card_ends_your_turn() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
 	tc.state.player(0).hp = 10
-	Fixtures.keep_first(tc)
 	Fixtures.give(tc, 0, Fixtures.attack(10))
 	tc.submit(Intents.PlayCard.new(0, 0, CardData.Mode.COLLECTIVE))
 	assert_false(tc.state.player(0).is_alive)

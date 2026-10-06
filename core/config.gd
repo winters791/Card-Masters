@@ -10,8 +10,8 @@ const STARTING_HP: int = 100
 
 # Hand (§3)
 const STARTING_HAND_SIZE: int = 7
-const DRAW_PER_TURN: int = 3
-const KEEP_PER_TURN: int = 2
+const MAX_DRAWS_PER_TURN: int = 3
+const MAX_DISCARDS_PER_TURN: int = 1
 const HAND_CAP: int = 10
 
 # Turn (§3)

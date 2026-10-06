@@ -11,7 +11,7 @@ This repo holds the **Godot 4.x prototype**.
 ## The game in 30 seconds
 
 - Everyone starts at 100 HP as Normal type. Types: Grass → Water → Fire → Grass (2x strong, 0.5x resisted).
-- Each turn: draw 3, keep 2; play up to one **Trap/Joker** card and one **Attack/Effect** card, into the **collective pool** (hits everyone) or at **one target**.
+- Each turn: draw up to 3 and optionally discard 1; play up to one **Trap/Joker** card and one **Attack/Effect** card, into the **collective pool** (hits everyone) or at **one target**.
 - Every play builds **Drama** (Heat). At the end of each round the host (the Joker) hits whoever has the most, for 10 damage, +10 every round.
 - Getting hit resets your Drama. By round 10 the host one-shots.
 
