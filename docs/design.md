@@ -260,20 +260,22 @@ A first batch across seven families; everything stays in until playtesting prune
 
 | Card | Base | Effect |
 |---|---|---|
-| Pickpocket | 1 | Target discards 2 random cards |
+| Pickpocket | 1 | Target discards 2 random cards (face up, so everyone sees them) |
 | Silence | 2 | Target can only play 1 card next turn |
-| Exposed | 1 | Target's hand is shown to everyone for 1 round |
+| Exposed | 1 | Target's hand is shown to everyone until the end of the next round |
 | Dry Well | 1 | On their next turn the target can't discard: they may still draw up to 3 (or stop early) but keep every card they draw, and with a full hand they can't draw at all |
 
 ### Heat manipulation (slot 2, effects)
 
-Guardrail: these always cost you more Heat than they give.
+The printed numbers stand; how much Heat these give versus cost is a playtesting question (an earlier "always cost more than they give" guardrail was dropped, since Spotlight and Flashpoint can give more).
 
 | Card | Base | Effect |
 |---|---|---|
-| Scapegoat | 2 | Target gains +3 Heat; you pay 4 (targeted) |
-| Spotlight | 2 | Collective: the lowest-Heat player gains +3 |
-| Flashpoint | 2 | Collective: everyone at 6+ Heat gains +2 |
+| Scapegoat | 2 | **Targeted only.** Target gains +3 Heat; you pay 4 |
+| Spotlight | 2 | **Collective only.** The lowest-Heat player (everyone tied, you too) gains +3. Heat is checked after you pay |
+| Flashpoint | 2 | **Collective only.** Everyone at 6+ Heat gains +2. Heat is checked after you pay, so it can push you to 6+ and hit you |
+
+- Pickpocket, Silence, Exposed and Dry Well can be played either way; collective hits everyone, you included.
 
 ### Joker modifiers (slot 1)
 

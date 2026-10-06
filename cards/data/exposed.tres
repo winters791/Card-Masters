@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"exposed"
+display_name = "Exposed"
+family = 3
+element = 0
+base_heat = 1
+rarity = 0
+mode_lock = 0
+effect_id = &"exposed"
+params = {}
+rules_text = "The target's hand is shown to everyone until the end of next round."

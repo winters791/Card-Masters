@@ -211,6 +211,27 @@ func set_joker_element(element: Element.Type, source_seat: int) -> void:
 	_emit(GameEvents.JokerTypeChanged.new(old, element, source_seat))
 
 
+## Pickpocket: the player discards `count` random cards (all of them if fewer).
+func discard_random(seat: int, count: int) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return
+	for i: int in mini(count, p.hand.size()):
+		var card: CardData = p.hand.pop_at(state.rng.randi_range(0, p.hand.size() - 1))
+		state.deck.discard([card])
+		_emit(GameEvents.CardDiscarded.new(seat, card))
+
+
+## Exposed: the player's hand is shown to everyone until the end of the next round.
+## Exposing again only ever extends it.
+func apply_exposed(seat: int, source_seat: int) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return
+	p.exposed_until_round = maxi(p.exposed_until_round, state.round_number + 1)
+	_emit(GameEvents.StatusApplied.new(seat, Status.EXPOSED, source_seat))
+
+
 ## Rooted: the player's type can't change until the end of the next round. Rooting
 ## again only ever extends it.
 func apply_root(seat: int, source_seat: int) -> void:
@@ -271,6 +292,8 @@ func _validate_play(intent: Intents.PlayCard) -> String:
 		return "%s is not implemented yet" % card.display_name
 	if state.slots_played.has(card.slot()):
 		return "Already played a slot %d card this turn" % card.slot()
+	if state.turn_restrictions.has(TurnRestriction.ONE_CARD) and not state.slots_played.is_empty():
+		return "Silenced: only one card this turn"
 	if not card.allows_mode(intent.mode):
 		return "%s can't be played in that mode" % card.display_name
 	var effect_error: String = EffectRegistry.get_effect(card.effect_id).validate_play(state, intent)
@@ -645,6 +668,9 @@ func _expire_roots() -> void:
 		if p.is_alive and p.rooted_until_round == state.round_number:
 			p.rooted_until_round = 0
 			_emit(GameEvents.StatusEnded.new(p.seat, Status.ROOTED, &"expired"))
+		if p.is_alive and p.exposed_until_round == state.round_number:
+			p.exposed_until_round = 0
+			_emit(GameEvents.StatusEnded.new(p.seat, Status.EXPOSED, &"expired"))
 
 
 # --- Elimination and match end -------------------------------------------------

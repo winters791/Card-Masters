@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"silence"
+display_name = "Silence"
+family = 3
+element = 0
+base_heat = 2
+rarity = 1
+mode_lock = 0
+effect_id = &"restrict_next_turn"
+params = {
+"restriction": &"one_card"
+}
+rules_text = "The target can only play 1 card on their next turn."

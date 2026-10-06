@@ -80,9 +80,7 @@ Run the tests before every commit. Add a test for every rule and every card.
 
 These aren't settled in `design.md` yet. Raise them when you reach the relevant roadmap item:
 
-1. **Spotlight ties:** Spotlight hits the "lowest-Heat player". Joker modifiers include everyone tied at a cutoff; confirm Spotlight does the same.
-2. **Collective pool persistence:** current assumption (now in code) is that collective cards resolve immediately (hit everyone once) and only traps remain in the pool. Confirm.
-3. **Mode lock for non-damage effects:** which effects make sense collectively? Settled for the type cards (only Type Swap is targeted-only); still open for disruption and Heat manipulation.
+1. **Collective pool persistence:** current assumption (now in code) is that collective cards resolve immediately (hit everyone once) and only traps remain in the pool. Confirm.
 
 ## Git
 
