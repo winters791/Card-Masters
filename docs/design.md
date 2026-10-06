@@ -245,7 +245,7 @@ A first batch across seven families; everything stays in until playtesting prune
 | Pickpocket | 1 | Target discards 2 random cards |
 | Silence | 2 | Target can only play 1 card next turn |
 | Exposed | 1 | Target's hand is shown to everyone for 1 round |
-| Dry Well | 1 | Target draws 3, keeps 1 next turn instead of 2 |
+| Dry Well | 1 | On their next turn the target can't discard: they may still draw up to 3 (or stop early) but keep every card they draw, and with a full hand they can't draw at all |
 
 ### Heat manipulation (slot 2, effects)
 

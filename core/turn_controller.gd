@@ -64,6 +64,7 @@ func can_draw() -> bool:
 func can_discard() -> bool:
 	return state.phase == GameState.Phase.DRAW \
 			and state.discards_this_turn < Config.MAX_DISCARDS_PER_TURN \
+			and not state.turn_restrictions.has(TurnRestriction.NO_DISCARD) \
 			and not state.current_player().hand.is_empty()
 
 
@@ -78,6 +79,16 @@ func deal_damage(source_seat: int, target_seat: int, base_damage: int, element: 
 	target.hp = maxi(0, target.hp - damage)
 	_emit(GameEvents.DamageDealt.new(source_seat, target_seat, element, base_damage, multiplier, damage, target.hp))
 	return damage
+
+
+## Restricts `seat`'s next turn. Repeats don't stack: a restriction is on or off.
+func restrict_next_turn(seat: int, restriction: StringName) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return
+	if not p.next_turn_restrictions.has(restriction):
+		p.next_turn_restrictions.append(restriction)
+	_emit(GameEvents.TurnRestricted.new(seat, restriction))
 
 
 func add_heat(seat: int, amount: int, reason: StringName) -> void:
@@ -102,6 +113,8 @@ func _validate_draw() -> String:
 func _validate_discard(intent: Intents.DiscardCard) -> String:
 	if state.phase != GameState.Phase.DRAW:
 		return "Discarding is over once you play a card"
+	if state.turn_restrictions.has(TurnRestriction.NO_DISCARD):
+		return "Can't discard this turn (Dry Well)"
 	if state.discards_this_turn >= Config.MAX_DISCARDS_PER_TURN:
 		return "Already discarded this turn"
 	if intent.hand_index < 0 or intent.hand_index >= state.current_player().hand.size():
@@ -180,6 +193,9 @@ func _begin_turn(seat: int) -> void:
 	state.slots_played.clear()
 	state.draws_this_turn = 0
 	state.discards_this_turn = 0
+	var p: PlayerState = state.player(seat)
+	state.turn_restrictions = p.next_turn_restrictions.duplicate()
+	p.next_turn_restrictions.clear()
 	state.phase = GameState.Phase.DRAW
 	_emit(GameEvents.TurnStarted.new(seat))
 

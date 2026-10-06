@@ -27,6 +27,8 @@ var turn_queue: Array[int] = []
 ## Draw step counters for the current turn.
 var draws_this_turn: int = 0
 var discards_this_turn: int = 0
+## Restrictions on the current player for this turn (see PlayerState.next_turn_restrictions).
+var turn_restrictions: Array[StringName] = []
 ## Slots used by the current player this turn.
 var slots_played: Array[CardData.Slot] = []
 
@@ -78,6 +80,7 @@ func get_view_for(viewer_seat: int) -> Dictionary:
 			"heat": p.heat,
 			"is_alive": p.is_alive,
 			"hand_size": p.hand.size(),
+			"next_turn_restrictions": p.next_turn_restrictions.duplicate(),
 		}
 		if p.seat == viewer_seat:
 			view["hand"] = p.hand.duplicate()
@@ -93,6 +96,7 @@ func get_view_for(viewer_seat: int) -> Dictionary:
 		"discard_pile": deck.discard_pile.duplicate(),
 		"draws_this_turn": draws_this_turn,
 		"discards_this_turn": discards_this_turn,
+		"turn_restrictions": turn_restrictions.duplicate(),
 		"winner_seat": winner_seat,
 		"is_draw": is_draw,
 	}
