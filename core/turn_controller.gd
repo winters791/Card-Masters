@@ -412,7 +412,7 @@ func _place_trap(card: CardData, seat: int, intent: Intents.PlayCard) -> void:
 	state.next_trap_id += 1
 	state.traps.append(trap)
 	_emit(GameEvents.TrapPlaced.new(trap.trap_id, host, seat, card))
-	# RULE-ASSUMPTION: placing a trap on a player is a targeted play (Tripwire sees it).
+	# Placing a trap on a player is a targeted play (Tripwire sees it).
 	if intent.mode == CardData.Mode.TARGETED:
 		_spring_traps(TrapOccurrence.new(TrapOccurrence.TARGETED_PLAY, host, seat, card))
 
@@ -420,9 +420,8 @@ func _place_trap(card: CardData, seat: int, intent: Intents.PlayCard) -> void:
 ## Fires every trap waiting for this occurrence, oldest first. A trap fires if its
 ## trigger matches, it sits on the occurrence's player or in the pool, and its own
 ## conditions hold. Its card and owner are revealed and the owner's Heat lands
-## (pool 1x, on a player 2x) before its effect.
-# RULE-ASSUMPTION: when several traps of the same card wait for the same thing, only
-# the oldest fires; the others keep waiting.
+## (pool 1x, on a player 2x) before its effect. When several traps of the same card
+## wait for the same thing, only the oldest fires; the others keep waiting.
 func _spring_traps(occurrence: TrapOccurrence) -> void:
 	var fired_cards: Array[StringName] = []
 	for trap: PlacedTrap in state.traps.duplicate():
@@ -440,7 +439,7 @@ func _spring_traps(occurrence: TrapOccurrence) -> void:
 		state.deck.discard([trap.card])
 		_emit(GameEvents.TrapFired.new(trap.trap_id, trap.card, trap.owner_seat, trap.host_seat,
 				occurrence.subject_seat))
-		# RULE-ASSUMPTION: a trap still fires after its owner is eliminated (no Heat then).
+		# A trap still fires after its owner is eliminated (no Heat then).
 		if state.player(trap.owner_seat).is_alive:
 			add_heat(trap.owner_seat, Heat.for_card(trap.card, trap.mode), &"trap")
 		effect.fire(self, trap, occurrence)
@@ -505,8 +504,8 @@ func _joker_hit(seat: int, damage: int) -> void:
 	var joker: JokerState = state.joker
 	var deflect := TrapOccurrence.new(TrapOccurrence.JOKER_HIT, seat, GameEvent.JOKER_SEAT)
 	_spring_traps(deflect)
-	# RULE-ASSUMPTION: a deflected hit can't be deflected again, and its new target is
-	# really hit by the Joker (Heat reset, Venom Fang, Grudge).
+	# A deflected hit can't be deflected again, and its new target is really hit by
+	# the Joker (Heat reset, Venom Fang, Grudge).
 	var hit_seat: int = deflect.redirect_seat if deflect.redirect_seat >= 0 else seat
 	var dealt: int = deal_damage(GameEvent.JOKER_SEAT, hit_seat, damage, joker.element, &"joker")
 	_set_heat(state.player(hit_seat), 0, &"joker_hit")

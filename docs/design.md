@@ -116,6 +116,9 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 - **Timing:** a trap fires the moment its trigger happens (Backfire mid-attack, Joker Deflect mid-Joker-attack). Its Heat lands for its owner right then, before its effect, so always before the Joker's hit.
 - **One-shot:** a trap fires once, then goes to the discard pile. Traps sitting on a player who is eliminated are discarded unfired.
 - **Healing** (Poison to Healing, Wellspring) never takes a player above 100 HP.
+- Placing a trap on a player counts as playing a targeted card (Tripwire sees it).
+- When several copies of the same trap wait for the same thing, only the oldest fires; the others keep waiting.
+- A trap still fires after its owner is eliminated (no Heat lands then).
 
 ---
 
@@ -291,7 +294,7 @@ Guardrail: these always cost you more Heat than they give.
 | Card | Base | Trigger → effect |
 |---|---|---|
 | Poison to Healing | 1 | Someone stacks poison → it becomes healing instead (same amount per round, same rounds: Venom becomes heal 5 × 3, ticking in the poison step) |
-| Joker Deflect | 2 | The Joker would hit you → it redirects 2 *living* seats anticlockwise (if that lands back on you, i.e. only 2 players left, it goes to the other player). You keep your Heat |
+| Joker Deflect | 2 | The Joker would hit you → it redirects 2 *living* seats anticlockwise (if that lands back on you, i.e. only 2 players left, it goes to the other player). You keep your Heat. The new target is really hit by the Joker (Heat reset, Venom Fang, Grudge), and a deflected hit can't be deflected again |
 | Backfire | 2 | The next targeted card that deals **direct damage** to you (Attacks, Shed Skin) → it hits its player instead; they still pay its Heat |
 | Tripwire | 1 | The next player to play a targeted card → they gain +3 Heat |
 | Type Snare | 2 | The next player to change type → they take 20 damage |
