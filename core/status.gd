@@ -10,5 +10,7 @@ const BURN: StringName = &"burn"
 const ROT: StringName = &"rot"
 ## Poison to Healing: heals each round end for a number of rounds.
 const HEALING: StringName = &"healing"
+## Exposed: the player's hand is shown to everyone until the end of the next round.
+const EXPOSED: StringName = &"exposed"
 ## Rooted: the player's type can't change until the end of the next round.
 const ROOTED: StringName = &"rooted"

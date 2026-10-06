@@ -18,6 +18,8 @@ var heals: Array[DotStack] = []
 var is_rotted: bool = false
 ## Rooted (type can't change) through the end of this round number; 0 = not rooted.
 var rooted_until_round: int = 0
+## Exposed (hand visible to all) through the end of this round number; 0 = hidden.
+var exposed_until_round: int = 0
 
 
 func _init(p_seat: int) -> void:

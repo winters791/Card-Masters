@@ -48,8 +48,8 @@ Data-driven cards, implemented family by family in this order (each family playa
 - [x] **Joker modifiers** with the three slots (targeting replaces, pattern replaces, effects stack): Cone, Double Tap, Stand Down, Lock-On, Wild Card, Invert, Ignite / Flood / Overgrow, Venom Fang, Overcharge.
 - [x] **Trigger / event system** for traps (hidden effect, visible placement, owner revealed and Heat applied on fire, before the Joker hit).
 - [x] **Traps:** Poison to Healing, Joker Deflect, Backfire, Tripwire, Type Snare, Grudge, Wellspring.
-- [ ] **Hand and turn disruption:** Pickpocket, Silence, Exposed, Dry Well. *(Dry Well done, with the next-turn restriction mechanism Silence can reuse.)*
-- [ ] **Heat manipulation:** Scapegoat, Spotlight, Flashpoint.
+- [x] **Hand and turn disruption:** Pickpocket, Silence, Exposed, Dry Well.
+- [x] **Heat manipulation:** Scapegoat, Spotlight, Flashpoint.
 
 **Done when:** every card in `design.md` §8 is implemented with at least one test.
 

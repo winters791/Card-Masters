@@ -17,4 +17,4 @@ This repo holds the **Godot 4.x prototype**.
 
 ## Status
 
-Phase 1 done: a headless rules core that plays full matches with the five attack cards (turns, draw/keep, Heat, the Joker, elimination, event log). Next up: Phase 2, the rest of the card families.
+Phases 1 and 2 done: a headless rules core that plays full matches with all 37 cards of the first batch (attacks, damage over time, type changes, disruption, Heat manipulation, Joker modifiers and traps). Next up: Phase 3, bots and a simulation runner to sanity-check the numbers.

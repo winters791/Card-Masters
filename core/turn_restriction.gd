@@ -4,3 +4,5 @@ extends RefCounted
 
 ## Dry Well: no discarding during the draw step, so every drawn card is kept.
 const NO_DISCARD: StringName = &"no_discard"
+## Silence: only one card may be played this turn.
+const ONE_CARD: StringName = &"one_card"
