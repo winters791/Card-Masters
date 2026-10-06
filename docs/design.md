@@ -168,6 +168,7 @@ The Joker is the game's centerpiece and escalation mechanic: a shared, indestruc
 - **Damage:** 10 in round 1, **+10 every round**. Eventually one hit kills whoever receives it.
 - **Attacks at the end of every round**, targeting the highest-Heat player.
 - **Round end order:** traps fire → burns tick → poison ticks → the Joker attacks. Eliminations are checked after each step; if that decides the match, the later steps don't happen (and a player killed by poison can't be the Joker's target).
+- **Damage over time** (poison, burns) is untyped: always 1x, whatever the target's type. Each stack is its own hit, and all ticks in one step land together (the last players dying in the same step is a draw).
 - **Indestructible.**
 
 ### Modifiers
@@ -226,7 +227,7 @@ A first batch across seven families; everything stays in until playtesting prune
 
 | Card | Base | Effect |
 |---|---|---|
-| Venom | 1 | Poison: 5 damage per round for 3 rounds. Stacks |
+| Venom | 1 | Poison: 5 damage per round for 3 rounds (the round it's played counts as the first). Stacks |
 | Scorch | 1 | Burn: 10 per round until the target changes type. Stacks (two burns = 20 per round); changing type puts out all of them |
 | Rot | 2 | The next time the target would resist a hit, the resist is halved (0.5x becomes 0.75x). Lasts until it triggers; doesn't stack |
 

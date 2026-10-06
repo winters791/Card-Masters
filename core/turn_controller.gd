@@ -303,8 +303,8 @@ func _end_turn() -> void:
 
 ## Round end order (§6): traps, then burns, then poison, then the Joker attack.
 ## Eliminations are checked after each step; if the match ends, later steps don't run.
-# RULE-ASSUMPTION: all ticks within one step land together, so the last players
-# dying in the same burn or poison step is a draw.
+## All ticks within one step land together, so the last players dying in the same
+## burn or poison step is a draw.
 func _end_round() -> void:
 	# Traps arrive with the trap family (Phase 2).
 	for step: Callable in [_tick_burns, _tick_poisons, _joker_attack]:
@@ -335,8 +335,7 @@ func _joker_attack() -> void:
 		_set_heat(state.player(seat), 0, &"joker_hit")
 
 
-# RULE-ASSUMPTION: damage over time is untyped (Normal, so always 1x) and each stack
-# is its own hit.
+## Damage over time is untyped (Normal, so always 1x) and each stack is its own hit.
 func _tick_burns() -> void:
 	for p: PlayerState in state.players:
 		if not p.is_alive:
@@ -345,8 +344,8 @@ func _tick_burns() -> void:
 			deal_damage(stack.source_seat, p.seat, stack.damage, Element.Type.NORMAL, Status.BURN)
 
 
-# RULE-ASSUMPTION: a poison ticks at the end of the round it was applied in, so
-# Venom's 3 rounds are that round and the next two.
+## A poison ticks at the end of the round it was applied in, so Venom's 3 rounds
+## are that round and the next two.
 func _tick_poisons() -> void:
 	for p: PlayerState in state.players:
 		if not p.is_alive or p.poisons.is_empty():

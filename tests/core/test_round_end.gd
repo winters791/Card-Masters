@@ -45,8 +45,8 @@ func test_players_killed_by_poison_are_not_joker_targets() -> void:
 	assert_eq(attack.target_seats, [1, 2], "the hottest survivors, tied at 1")
 
 
-# RULE-ASSUMPTION check: all ticks in one step land together, so two last players
-# dying to burns in the same step is a draw.
+# All ticks in one step land together, so two last players dying to burns in the
+# same step is a draw.
 func test_last_players_dying_in_the_same_tick_step_is_a_draw() -> void:
 	var tc: TurnController = Fixtures.new_match(2)
 	tc.state.player(0).hp = 10
