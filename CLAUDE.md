@@ -59,9 +59,17 @@ godot --headless --import --path .
 # Run all tests headless (exit code 0 = all passed)
 godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
 
+# Run one test file / one test
+godot --headless -s addons/gut/gut_cmdln.gd -gtest=res://tests/test_project_setup.gd -gunit_test_name=test_main_scene_instantiates -gexit
+
+# Parse-check a single script (non-zero exit on syntax/type errors)
+godot --headless --path . --check-only -s res://core/some_script.gd
+
 # Run the game
 godot --path .
 ```
+
+In Claude Code cloud sessions, `.claude/hooks/session-start.sh` installs the pinned Godot binary (`godot` on PATH) and runs the import step automatically. When upgrading Godot, bump `GODOT_VERSION` there, `config/features` in `project.godot`, and GUT to the matching release.
 
 Run the tests before every commit. Add a test for every rule and every card.
 
