@@ -116,15 +116,49 @@ func apply_rot(seat: int, source_seat: int) -> void:
 	_emit(GameEvents.StatusApplied.new(seat, Status.ROT, source_seat))
 
 
-## Changes a player's type. Changing type puts out every burn on them (Scorch).
-func set_element(seat: int, element: Element.Type) -> void:
+## Changes a living player's type, unless they're Rooted (then it fails). Changing
+## type puts out every burn on them (Scorch). Returns false if the change was blocked.
+func change_element(seat: int, element: Element.Type) -> bool:
 	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return false
+	if state.is_rooted(seat):
+		_emit(GameEvents.TypeChangeBlocked.new(seat))
+		return false
 	if p.element == element:
-		return
+		return true
+	var old: Element.Type = p.element
 	p.element = element
+	_emit(GameEvents.TypeChanged.new(seat, old, element))
 	if not p.burns.is_empty():
 		p.burns.clear()
 		_emit(GameEvents.StatusEnded.new(seat, Status.BURN, &"type_changed"))
+	return true
+
+
+## Type Swap: both players trade types. If either is Rooted the whole swap fails.
+func swap_elements(seat_a: int, seat_b: int) -> bool:
+	var blocked: bool = false
+	for seat: int in [seat_a, seat_b]:
+		if state.is_rooted(seat):
+			_emit(GameEvents.TypeChangeBlocked.new(seat))
+			blocked = true
+	if blocked:
+		return false
+	var element_a: Element.Type = state.player(seat_a).element
+	change_element(seat_a, state.player(seat_b).element)
+	change_element(seat_b, element_a)
+	return true
+
+
+## Rooted: the player's type can't change until the end of the next round. Rooting
+## again only ever extends it.
+func apply_root(seat: int, source_seat: int) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return
+	p.rooted_until_round = maxi(p.rooted_until_round, state.round_number + 1)
+	_emit(GameEvents.StatusApplied.new(seat, Status.ROOTED, source_seat))
 
 
 ## Restricts `seat`'s next turn. Repeats don't stack: a restriction is on or off.
@@ -179,6 +213,9 @@ func _validate_play(intent: Intents.PlayCard) -> String:
 		return "Already played a slot %d card this turn" % card.slot()
 	if not card.allows_mode(intent.mode):
 		return "%s can't be played in that mode" % card.display_name
+	var effect_error: String = EffectRegistry.get_effect(card.effect_id).validate_play(state, intent)
+	if not effect_error.is_empty():
+		return effect_error
 	if intent.mode == CardData.Mode.TARGETED:
 		if intent.target_seat < 0 or intent.target_seat >= state.players.size():
 			return "Target seat %d does not exist" % intent.target_seat
@@ -280,7 +317,8 @@ func _apply_play(intent: Intents.PlayCard) -> void:
 		_emit(GameEvents.CardPlayed.new(p.seat, card, intent.mode, -1))
 
 	add_heat(p.seat, Heat.for_card(card, intent.mode), &"card")
-	EffectRegistry.get_effect(card.effect_id).resolve(EffectContext.new(self, card, p.seat, intent.mode, targets))
+	EffectRegistry.get_effect(card.effect_id).resolve(
+			EffectContext.new(self, card, p.seat, intent.mode, targets, intent.chosen_element))
 	state.deck.discard([card])
 
 	_resolve_eliminations()
@@ -312,6 +350,7 @@ func _end_round() -> void:
 		_resolve_eliminations()
 		if state.is_over():
 			return
+	_expire_roots()
 	_emit(GameEvents.RoundEnded.new(state.round_number))
 	_start_round(state.round_number + 1)
 
@@ -357,6 +396,13 @@ func _tick_poisons() -> void:
 		for i: int in p.poisons.size() - remaining.size():
 			_emit(GameEvents.StatusEnded.new(p.seat, Status.POISON, &"expired"))
 		p.poisons = remaining
+
+
+func _expire_roots() -> void:
+	for p: PlayerState in state.players:
+		if p.is_alive and p.rooted_until_round == state.round_number:
+			p.rooted_until_round = 0
+			_emit(GameEvents.StatusEnded.new(p.seat, Status.ROOTED, &"expired"))
 
 
 # --- Elimination and match end -------------------------------------------------

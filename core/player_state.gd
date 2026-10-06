@@ -14,6 +14,8 @@ var poisons: Array[DotStack] = []
 var burns: Array[DotStack] = []
 ## Rot waiting for this player's next resist.
 var is_rotted: bool = false
+## Rooted (type can't change) through the end of this round number; 0 = not rooted.
+var rooted_until_round: int = 0
 
 
 func _init(p_seat: int) -> void:

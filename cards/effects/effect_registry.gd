@@ -8,6 +8,10 @@ const _EFFECTS: Dictionary[StringName, GDScript] = {
 	&"poison": preload("res://cards/effects/poison_effect.gd"),
 	&"burn": preload("res://cards/effects/burn_effect.gd"),
 	&"rot": preload("res://cards/effects/rot_effect.gd"),
+	&"type_swap": preload("res://cards/effects/type_swap_effect.gd"),
+	&"convert": preload("res://cards/effects/convert_effect.gd"),
+	&"rooted": preload("res://cards/effects/rooted_effect.gd"),
+	&"shed_skin": preload("res://cards/effects/shed_skin_effect.gd"),
 }
 
 

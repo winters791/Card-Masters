@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"shed_skin"
+display_name = "Shed Skin"
+family = 2
+element = 0
+base_heat = 1
+rarity = 0
+mode_lock = 0
+effect_id = &"shed_skin"
+params = {
+"damage": 10
+}
+rules_text = "Change your own type, then deal 10 damage of your new type to the target."

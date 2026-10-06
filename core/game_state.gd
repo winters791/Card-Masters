@@ -64,6 +64,10 @@ func alive_seats() -> Array[int]:
 	return seats
 
 
+func is_rooted(seat: int) -> bool:
+	return players[seat].rooted_until_round >= round_number
+
+
 func joker_damage() -> int:
 	return JokerState.damage_for_round(round_number)
 
@@ -84,6 +88,7 @@ func get_view_for(viewer_seat: int) -> Dictionary:
 			"poison_rounds_left": p.poisons.map(func(s: DotStack) -> int: return s.rounds_left),
 			"burn_stacks": p.burns.size(),
 			"is_rotted": p.is_rotted,
+			"rooted_until_round": p.rooted_until_round,
 		}
 		if p.seat == viewer_seat:
 			view["hand"] = p.hand.duplicate()

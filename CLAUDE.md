@@ -84,7 +84,7 @@ These aren't settled in `design.md` yet. Raise them when you reach the relevant 
 2. **Ties inside modifiers:** Cone hits the "top 3 Heat players" and Spotlight hits the "lowest-Heat player" — what happens on ties?
 3. **Seat-based effects with eliminated players** (e.g. Joker Deflect "2 seats anticlockwise"): skip eliminated seats?
 4. **Collective pool persistence:** current assumption is that collective cards resolve immediately (hit everyone once) and only traps remain in the pool. Confirm.
-5. **Mode lock for non-damage effects:** which effects make sense collectively (e.g. Type Swap obviously can't)? Define which cards are targeted-only.
+5. **Mode lock for non-damage effects:** which effects make sense collectively? Settled for the type cards (only Type Swap is targeted-only); still open for disruption and Heat manipulation.
 
 ## Git
 

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"type_swap"
+display_name = "Type Swap"
+family = 2
+element = 0
+base_heat = 2
+rarity = 1
+mode_lock = 2
+effect_id = &"type_swap"
+params = {}
+rules_text = "Swap your type with the target's. Targeted only. Fails if either of you is Rooted."

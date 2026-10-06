@@ -44,7 +44,7 @@ Data-driven cards, implemented family by family in this order (each family playa
 - [x] Card data format (custom `Resource` per card: id, name, family, slot, type, base Heat, rarity, mode lock, effect params).
 - [x] **Attacks:** Ember, Thornlash, Tidal Crash, Wildfire (collective only), Cataclysm (targeted only).
 - [x] **Damage over time:** Venom (stacking poison), Scorch (stacking burn until type change), Rot (halves the next resist). Round end: traps → burns → poison → Joker.
-- [ ] **Type manipulation:** Type Swap, Convert, Rooted, Shed Skin.
+- [x] **Type manipulation:** Type Swap, Convert, Rooted, Shed Skin.
 - [ ] **Joker modifiers** with the three slots (targeting replaces, pattern replaces, effects stack): Cone, Double Tap, Stand Down, Lock-On, Wild Card, Invert, Ignite / Flood / Overgrow, Venom Fang, Overcharge.
 - [ ] **Trigger / event system** for traps (hidden effect, visible placement, owner revealed and Heat applied on fire, before the Joker hit).
 - [ ] **Traps:** Poison to Healing, Joker Deflect, Backfire, Tripwire, Type Snare, Grudge, Wellspring.
