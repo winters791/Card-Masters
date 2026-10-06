@@ -10,10 +10,10 @@ Each phase ends with something runnable. Tick boxes as work lands.
 
 ## Phase 0 — Project setup
 
-- [ ] Create the Godot 4.x project at the repo root (`project.godot`), 2D, GDScript only.
-- [ ] Folder layout as described in `CLAUDE.md` (`core/`, `cards/`, `ui/`, `ai/`, `tests/`).
-- [ ] Add the **GUT** test framework (addons/gut) and a headless test command.
-- [ ] Empty main scene that boots without errors.
+- [x] Create the Godot 4.x project at the repo root (`project.godot`), 2D, GDScript only.
+- [x] Folder layout as described in `CLAUDE.md` (`core/`, `cards/`, `ui/`, `ai/`, `tests/`).
+- [x] Add the **GUT** test framework (addons/gut) and a headless test command.
+- [x] Empty main scene that boots without errors.
 
 **Done when:** the project opens in the editor and `godot --headless` runs an empty test suite.
 

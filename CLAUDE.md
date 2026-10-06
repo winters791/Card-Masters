@@ -23,8 +23,8 @@ For small gaps that block coding, pick the simplest reading, mark it in code wit
 
 ## Tech stack
 
-- **Godot 4.x, GDScript only** (no C#). Statically typed GDScript (`var hp: int`, typed function signatures) everywhere.
-- **GUT** (Godot Unit Test) for tests, in `addons/gut/`.
+- **Godot 4.7.x, GDScript only** (no C#). Statically typed GDScript (`var hp: int`, typed function signatures) everywhere; the project warns on untyped declarations, so keep the test output warning-free.
+- **GUT 9.7.1** (Godot Unit Test, the release for Godot 4.7) for tests, vendored in `addons/gut/`. Test files are `tests/**/test_*.gd` extending `GutTest` (see `.gutconfig.json`).
 - 2D only. Placeholder art (coloured rects/labels) until Phase 7.
 
 ## Architecture
@@ -53,7 +53,10 @@ Conventions:
 ## Commands
 
 ```bash
-# Run all tests headless (after GUT is installed)
+# First time on a fresh clone (no .godot/ yet): import so class_names and GUT resolve
+godot --headless --import --path .
+
+# Run all tests headless (exit code 0 = all passed)
 godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
 
 # Run the game
