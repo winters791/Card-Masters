@@ -85,7 +85,8 @@ func test_event_view_hides_drawn_cards_from_others() -> void:
 
 ## Plays a whole match with a simple scripted policy: draw while allowed (up to 3,
 ## discarding the oldest card once if the hand is full), then play the first card in
-## hand at the next living seat (collectively if the card is locked to it).
+## hand at the next living seat (collectively if the card is locked to it), picking
+## the next type round from its own when the card asks for one.
 ## Returns the controller once the match is over.
 func _play_scripted_match(match_seed: int, player_count: int) -> TurnController:
 	var deck: Array[CardData] = []
@@ -112,7 +113,9 @@ func _play_scripted_match(match_seed: int, player_count: int) -> TurnController:
 		if card.mode_lock == CardData.ModeLock.COLLECTIVE_ONLY:
 			mode = CardData.Mode.COLLECTIVE
 		var target: int = _next_alive(tc, seat)
-		assert_eq(tc.submit(Intents.PlayCard.new(seat, 0, mode, target)), "")
+		# Cards that ask for a type (Convert, Shed Skin) get the next one round from ours.
+		var chosen: int = (tc.state.player(seat).element + 1) % Element.Type.size()
+		assert_eq(tc.submit(Intents.PlayCard.new(seat, 0, mode, target, chosen)), "")
 		if not tc.state.is_over() and tc.state.current_seat == seat:
 			assert_eq(tc.submit(Intents.EndTurn.new(seat)), "")
 	return tc

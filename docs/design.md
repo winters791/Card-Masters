@@ -235,10 +235,13 @@ A first batch across seven families; everything stays in until playtesting prune
 
 | Card | Base | Effect |
 |---|---|---|
-| Type Swap | 2 | Swap your type with a target's |
-| Convert | 2 | Set a target's type to one of your choice |
-| Rooted | 2 | Target can't change type for 1 round |
-| Shed Skin | 1 | Change your own type and deal 10 damage to a target (+1 for direct damage) |
+| Type Swap | 2 | Swap your type with a target's. **Targeted only.** Fails entirely if either of you is Rooted |
+| Convert | 2 | Set a target's type to one of your choice. Collective: everyone becomes that type, you included |
+| Rooted | 2 | Target can't change type until the end of the next round (so it always covers their next turn) |
+| Shed Skin | 1 | Change your own type to a different one, then deal 10 damage **of your new type** to a target (+1 for direct damage). Collective: hits everyone, you included |
+
+- A type change on a **Rooted** player fails; the card is still played and still costs Heat. A Rooted player's Shed Skin hits with their current type.
+- Changing type puts out all burns (Scorch).
 
 ### Hand and turn disruption (slot 2, effects)
 

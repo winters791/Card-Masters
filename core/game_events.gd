@@ -148,6 +148,32 @@ class DamageDealt extends GameEvent:
 			source, target_seat, damage, Element.type_name(element), multiplier, cause, hp_after]
 
 
+class TypeChanged extends GameEvent:
+	var seat: int
+	var old_element: Element.Type
+	var new_element: Element.Type
+
+	func _init(p_seat: int, p_old: Element.Type, p_new: Element.Type) -> void:
+		seat = p_seat
+		old_element = p_old
+		new_element = p_new
+
+	func describe() -> String:
+		return "Seat %d changes type: %s -> %s" % [
+			seat, Element.type_name(old_element), Element.type_name(new_element)]
+
+
+## A type change on a Rooted player failed.
+class TypeChangeBlocked extends GameEvent:
+	var seat: int
+
+	func _init(p_seat: int) -> void:
+		seat = p_seat
+
+	func describe() -> String:
+		return "Seat %d is Rooted: type change fails" % seat
+
+
 ## A lasting effect lands on a player (see Status).
 class StatusApplied extends GameEvent:
 	var seat: int

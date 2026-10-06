@@ -98,7 +98,7 @@ func test_changing_type_puts_out_every_burn() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
 	Fixtures.play_and_end(tc, _card(&"scorch"), 1)
 	tc.apply_burn(1, 10, 2)
-	tc.set_element(1, Element.Type.WATER)
+	tc.change_element(1, Element.Type.WATER)
 	assert_true(tc.state.player(1).burns.is_empty())
 	var ended := Fixtures.events_of(tc, GameEvents.StatusEnded)[0] as GameEvents.StatusEnded
 	assert_eq(ended.status, Status.BURN)
@@ -110,7 +110,7 @@ func test_changing_type_puts_out_every_burn() -> void:
 func test_setting_the_same_type_keeps_burns() -> void:
 	var tc: TurnController = Fixtures.new_match(2)
 	tc.apply_burn(1, 10, 0)
-	tc.set_element(1, Element.Type.NORMAL)
+	tc.change_element(1, Element.Type.NORMAL)
 	assert_eq(tc.state.player(1).burns.size(), 1)
 
 
