@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"lock_on"
+display_name = "Lock-On"
+family = 5
+element = 0
+base_heat = 2
+rarity = 1
+mode_lock = 1
+effect_id = &"joker_modifier"
+params = {
+"modifier": &"lock_on"
+}
+rules_text = "The Joker locks onto whoever is hottest right now and hits them regardless of Heat, until replaced or they're eliminated."

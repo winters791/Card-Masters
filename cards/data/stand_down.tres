@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"stand_down"
+display_name = "Stand Down"
+family = 5
+element = 0
+base_heat = 2
+rarity = 1
+mode_lock = 1
+effect_id = &"joker_modifier"
+params = {
+"modifier": &"stand_down"
+}
+rules_text = "The Joker skips this round's attack (it still grows +10)."

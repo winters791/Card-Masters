@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"overcharge"
+display_name = "Overcharge"
+family = 5
+element = 0
+base_heat = 3
+rarity = 2
+mode_lock = 1
+effect_id = &"joker_modifier"
+params = {
+"bonus": 20,
+"modifier": &"overcharge"
+}
+rules_text = "+20 Joker damage this round only. Stacks."
