@@ -5,6 +5,9 @@ extends RefCounted
 const _EFFECTS: Dictionary[StringName, GDScript] = {
 	&"attack": preload("res://cards/effects/attack_effect.gd"),
 	&"restrict_next_turn": preload("res://cards/effects/restrict_next_turn_effect.gd"),
+	&"poison": preload("res://cards/effects/poison_effect.gd"),
+	&"burn": preload("res://cards/effects/burn_effect.gd"),
+	&"rot": preload("res://cards/effects/rot_effect.gd"),
 }
 
 

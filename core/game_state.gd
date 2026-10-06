@@ -81,6 +81,9 @@ func get_view_for(viewer_seat: int) -> Dictionary:
 			"is_alive": p.is_alive,
 			"hand_size": p.hand.size(),
 			"next_turn_restrictions": p.next_turn_restrictions.duplicate(),
+			"poison_rounds_left": p.poisons.map(func(s: DotStack) -> int: return s.rounds_left),
+			"burn_stacks": p.burns.size(),
+			"is_rotted": p.is_rotted,
 		}
 		if p.seat == viewer_seat:
 			view["hand"] = p.hand.duplicate()

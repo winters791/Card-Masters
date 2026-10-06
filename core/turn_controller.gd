@@ -70,15 +70,61 @@ func can_discard() -> bool:
 
 ## Deals typed damage to a living player. Eliminations are resolved by the caller
 ## once the whole action is done, so simultaneous hits can end in a draw.
-func deal_damage(source_seat: int, target_seat: int, base_damage: int, element: Element.Type) -> int:
+## A rotted target's resist is halved, which uses up the Rot.
+func deal_damage(source_seat: int, target_seat: int, base_damage: int, element: Element.Type,
+		cause: StringName = &"card") -> int:
 	var target: PlayerState = state.player(target_seat)
 	if not target.is_alive:
 		return 0
 	var multiplier: float = TypeChart.multiplier(element, target.element)
-	var damage: int = TypeChart.apply(base_damage, element, target.element)
+	if target.is_rotted and multiplier == Config.RESISTED_MULTIPLIER:
+		multiplier = Config.ROT_RESIST_MULTIPLIER
+		target.is_rotted = false
+		_emit(GameEvents.StatusEnded.new(target_seat, Status.ROT, &"triggered"))
+	# Fractional damage rounds down (§2).
+	var damage: int = floori(base_damage * multiplier)
 	target.hp = maxi(0, target.hp - damage)
-	_emit(GameEvents.DamageDealt.new(source_seat, target_seat, element, base_damage, multiplier, damage, target.hp))
+	_emit(GameEvents.DamageDealt.new(source_seat, target_seat, element, base_damage, multiplier,
+			damage, target.hp, cause))
 	return damage
+
+
+## Venom: a new poison stack ticking each round end for `rounds` rounds.
+func apply_poison(seat: int, damage: int, rounds: int, source_seat: int) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return
+	p.poisons.append(DotStack.new(damage, rounds, source_seat))
+	_emit(GameEvents.StatusApplied.new(seat, Status.POISON, source_seat))
+
+
+## Scorch: a new burn stack ticking each round end until the player changes type.
+func apply_burn(seat: int, damage: int, source_seat: int) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return
+	p.burns.append(DotStack.new(damage, DotStack.UNTIL_REMOVED, source_seat))
+	_emit(GameEvents.StatusApplied.new(seat, Status.BURN, source_seat))
+
+
+## Rot doesn't stack: on an already rotted player it does nothing.
+func apply_rot(seat: int, source_seat: int) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive or p.is_rotted:
+		return
+	p.is_rotted = true
+	_emit(GameEvents.StatusApplied.new(seat, Status.ROT, source_seat))
+
+
+## Changes a player's type. Changing type puts out every burn on them (Scorch).
+func set_element(seat: int, element: Element.Type) -> void:
+	var p: PlayerState = state.player(seat)
+	if p.element == element:
+		return
+	p.element = element
+	if not p.burns.is_empty():
+		p.burns.clear()
+		_emit(GameEvents.StatusEnded.new(seat, Status.BURN, &"type_changed"))
 
 
 ## Restricts `seat`'s next turn. Repeats don't stack: a restriction is on or off.
@@ -255,11 +301,17 @@ func _end_turn() -> void:
 	_start_next_turn()
 
 
+## Round end order (§6): traps, then burns, then poison, then the Joker attack.
+## Eliminations are checked after each step; if the match ends, later steps don't run.
+# RULE-ASSUMPTION: all ticks within one step land together, so the last players
+# dying in the same burn or poison step is a draw.
 func _end_round() -> void:
-	_joker_attack()
-	_resolve_eliminations()
-	if state.is_over():
-		return
+	# Traps arrive with the trap family (Phase 2).
+	for step: Callable in [_tick_burns, _tick_poisons, _joker_attack]:
+		step.call()
+		_resolve_eliminations()
+		if state.is_over():
+			return
 	_emit(GameEvents.RoundEnded.new(state.round_number))
 	_start_round(state.round_number + 1)
 
@@ -279,8 +331,33 @@ func _joker_attack() -> void:
 	var damage: int = state.joker_damage()
 	_emit(GameEvents.JokerAttacked.new(state.round_number, state.joker.element, damage, targets))
 	for seat: int in targets:
-		deal_damage(GameEvent.JOKER_SEAT, seat, damage, state.joker.element)
+		deal_damage(GameEvent.JOKER_SEAT, seat, damage, state.joker.element, &"joker")
 		_set_heat(state.player(seat), 0, &"joker_hit")
+
+
+# RULE-ASSUMPTION: damage over time is untyped (Normal, so always 1x) and each stack
+# is its own hit.
+func _tick_burns() -> void:
+	for p: PlayerState in state.players:
+		if not p.is_alive:
+			continue
+		for stack: DotStack in p.burns:
+			deal_damage(stack.source_seat, p.seat, stack.damage, Element.Type.NORMAL, Status.BURN)
+
+
+# RULE-ASSUMPTION: a poison ticks at the end of the round it was applied in, so
+# Venom's 3 rounds are that round and the next two.
+func _tick_poisons() -> void:
+	for p: PlayerState in state.players:
+		if not p.is_alive or p.poisons.is_empty():
+			continue
+		for stack: DotStack in p.poisons:
+			deal_damage(stack.source_seat, p.seat, stack.damage, Element.Type.NORMAL, Status.POISON)
+			stack.rounds_left -= 1
+		var remaining: Array[DotStack] = p.poisons.filter(func(s: DotStack) -> bool: return s.rounds_left > 0)
+		for i: int in p.poisons.size() - remaining.size():
+			_emit(GameEvents.StatusEnded.new(p.seat, Status.POISON, &"expired"))
+		p.poisons = remaining
 
 
 # --- Elimination and match end -------------------------------------------------
