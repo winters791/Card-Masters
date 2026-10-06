@@ -8,5 +8,7 @@ const POISON: StringName = &"poison"
 const BURN: StringName = &"burn"
 ## Rot: the player's next resist is halved (0.5x -> 0.75x). Doesn't stack.
 const ROT: StringName = &"rot"
+## Poison to Healing: heals each round end for a number of rounds.
+const HEALING: StringName = &"healing"
 ## Rooted: the player's type can't change until the end of the next round.
 const ROOTED: StringName = &"rooted"

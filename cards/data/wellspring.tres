@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"wellspring"
+display_name = "Wellspring"
+family = 6
+element = 0
+base_heat = 1
+rarity = 0
+mode_lock = 1
+effect_id = &"trap_wellspring"
+params = {
+"heal": 10
+}
+rules_text = "Collective pool only. A Water card enters the collective pool: all Water players heal 10."

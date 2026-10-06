@@ -90,12 +90,38 @@ func deal_damage(source_seat: int, target_seat: int, base_damage: int, element: 
 
 
 ## Venom: a new poison stack ticking each round end for `rounds` rounds.
+## A trap (Poison to Healing) can turn it into healing instead.
 func apply_poison(seat: int, damage: int, rounds: int, source_seat: int) -> void:
 	var p: PlayerState = state.player(seat)
 	if not p.is_alive:
 		return
+	var occurrence := TrapOccurrence.new(TrapOccurrence.POISON_APPLIED, seat, source_seat, null,
+			{"damage": damage, "rounds": rounds})
+	_spring_traps(occurrence)
+	if occurrence.cancelled:
+		return
 	p.poisons.append(DotStack.new(damage, rounds, source_seat))
 	_emit(GameEvents.StatusApplied.new(seat, Status.POISON, source_seat))
+
+
+## Healing over time, ticking in the poison step at round end.
+func apply_healing(seat: int, amount: int, rounds: int, source_seat: int) -> void:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return
+	p.heals.append(DotStack.new(amount, rounds, source_seat))
+	_emit(GameEvents.StatusApplied.new(seat, Status.HEALING, source_seat))
+
+
+## Heals a living player, never above Config.MAX_HP. Returns the HP actually gained.
+func heal(seat: int, amount: int, cause: StringName) -> int:
+	var p: PlayerState = state.player(seat)
+	if not p.is_alive:
+		return 0
+	var gained: int = clampi(amount, 0, Config.MAX_HP - p.hp)
+	p.hp += gained
+	_emit(GameEvents.Healed.new(seat, gained, p.hp, cause))
+	return gained
 
 
 ## Scorch: a new burn stack ticking each round end until the player changes type.
@@ -133,6 +159,7 @@ func change_element(seat: int, element: Element.Type) -> bool:
 	if not p.burns.is_empty():
 		p.burns.clear()
 		_emit(GameEvents.StatusEnded.new(seat, Status.BURN, &"type_changed"))
+	_spring_traps(TrapOccurrence.new(TrapOccurrence.TYPE_CHANGED, seat, seat))
 	return true
 
 
@@ -340,25 +367,83 @@ func _apply_play(intent: Intents.PlayCard) -> void:
 	state.phase = GameState.Phase.PLAY
 	state.slots_played.append(card.slot())
 
-	var targets: Array[int] = []
-	if intent.mode == CardData.Mode.TARGETED:
-		targets.append(intent.target_seat)
-		_emit(GameEvents.CardPlayed.new(p.seat, card, intent.mode, intent.target_seat))
+	if card.family == CardData.Family.TRAP:
+		_place_trap(card, p.seat, intent)
 	else:
-		# Collective plays hit every living player, including the one who played it (§4).
-		targets = state.alive_seats()
-		_emit(GameEvents.CardPlayed.new(p.seat, card, intent.mode, -1))
-
-	add_heat(p.seat, Heat.for_card(card, intent.mode), &"card")
-	EffectRegistry.get_effect(card.effect_id).resolve(
-			EffectContext.new(self, card, p.seat, intent.mode, targets, intent.chosen_element))
-	state.deck.discard([card])
+		_play_effect_card(card, p.seat, intent)
 
 	_resolve_eliminations()
 	if state.is_over():
 		return
 	if not p.is_alive:
 		_end_turn()
+
+
+func _play_effect_card(card: CardData, seat: int, intent: Intents.PlayCard) -> void:
+	var targets: Array[int] = []
+	if intent.mode == CardData.Mode.TARGETED:
+		targets.append(intent.target_seat)
+		_emit(GameEvents.CardPlayed.new(seat, card, intent.mode, intent.target_seat))
+	else:
+		# Collective plays hit every living player, including the one who played it (§4).
+		targets = state.alive_seats()
+		_emit(GameEvents.CardPlayed.new(seat, card, intent.mode, -1))
+
+	add_heat(seat, Heat.for_card(card, intent.mode), &"card")
+	if intent.mode == CardData.Mode.TARGETED:
+		# Backfire may bounce it back at the player; Tripwire may heat them up.
+		var occurrence := TrapOccurrence.new(TrapOccurrence.TARGETED_PLAY, intent.target_seat, seat, card)
+		_spring_traps(occurrence)
+		if occurrence.redirect_seat >= 0:
+			targets = [occurrence.redirect_seat]
+	EffectRegistry.get_effect(card.effect_id).resolve(
+			EffectContext.new(self, card, seat, intent.mode, targets, intent.chosen_element))
+	state.deck.discard([card])
+	if intent.mode == CardData.Mode.COLLECTIVE:
+		# Card-triggered traps fire once the card has resolved (Wellspring heals after the hit).
+		_spring_traps(TrapOccurrence.new(TrapOccurrence.COLLECTIVE_PLAY, seat, seat, card))
+
+
+## Places a trap face down: on the target, or in the collective pool. No Heat yet;
+## it lands when the trap fires. The card stays with the trap until then.
+func _place_trap(card: CardData, seat: int, intent: Intents.PlayCard) -> void:
+	var host: int = intent.target_seat if intent.mode == CardData.Mode.TARGETED else PlacedTrap.POOL
+	var trap := PlacedTrap.new(state.next_trap_id, card, seat, host, intent.mode)
+	state.next_trap_id += 1
+	state.traps.append(trap)
+	_emit(GameEvents.TrapPlaced.new(trap.trap_id, host, seat, card))
+	# RULE-ASSUMPTION: placing a trap on a player is a targeted play (Tripwire sees it).
+	if intent.mode == CardData.Mode.TARGETED:
+		_spring_traps(TrapOccurrence.new(TrapOccurrence.TARGETED_PLAY, host, seat, card))
+
+
+## Fires every trap waiting for this occurrence, oldest first. A trap fires if its
+## trigger matches, it sits on the occurrence's player or in the pool, and its own
+## conditions hold. Its card and owner are revealed and the owner's Heat lands
+## (pool 1x, on a player 2x) before its effect.
+# RULE-ASSUMPTION: when several traps of the same card wait for the same thing, only
+# the oldest fires; the others keep waiting.
+func _spring_traps(occurrence: TrapOccurrence) -> void:
+	var fired_cards: Array[StringName] = []
+	for trap: PlacedTrap in state.traps.duplicate():
+		if not state.traps.has(trap):
+			continue
+		var effect := EffectRegistry.get_effect(trap.card.effect_id) as TrapEffect
+		if effect == null or effect.trigger() != occurrence.trigger:
+			continue
+		if trap.host_seat != PlacedTrap.POOL and trap.host_seat != occurrence.subject_seat:
+			continue
+		if fired_cards.has(trap.card.id) or not effect.matches(self, trap, occurrence):
+			continue
+		fired_cards.append(trap.card.id)
+		state.traps.erase(trap)
+		state.deck.discard([trap.card])
+		_emit(GameEvents.TrapFired.new(trap.trap_id, trap.card, trap.owner_seat, trap.host_seat,
+				occurrence.subject_seat))
+		# RULE-ASSUMPTION: a trap still fires after its owner is eliminated (no Heat then).
+		if state.player(trap.owner_seat).is_alive:
+			add_heat(trap.owner_seat, Heat.for_card(trap.card, trap.mode), &"trap")
+		effect.fire(self, trap, occurrence)
 
 
 ## Ending the turn without playing a card is a skip (+1 Heat). A timeout counts the
@@ -377,7 +462,8 @@ func _end_turn() -> void:
 ## All ticks within one step land together, so the last players dying in the same
 ## burn or poison step is a draw.
 func _end_round() -> void:
-	# Traps arrive with the trap family (Phase 2).
+	# Traps fire the moment their trigger happens (Joker Deflect and Grudge during the
+	# Joker step), so no trap waits for the round end itself yet.
 	for step: Callable in [_tick_burns, _tick_poisons, _joker_attack]:
 		step.call()
 		_resolve_eliminations()
@@ -410,11 +496,25 @@ func _joker_attack() -> void:
 			return
 		_emit(GameEvents.JokerAttacked.new(state.round_number, joker.element, damage, targets, attack_number))
 		for seat: int in targets:
-			deal_damage(GameEvent.JOKER_SEAT, seat, damage, joker.element, &"joker")
-			_set_heat(state.player(seat), 0, &"joker_hit")
-			for fang: JokerModifier in joker.effects_with_id(JokerModifier.VENOM_FANG):
-				apply_poison(seat, int(fang.params.get("tick_damage", 0)), int(fang.params.get("rounds", 0)),
-						fang.source_seat)
+			_joker_hit(seat, damage)
+
+
+## One Joker hit on `seat`. Joker Deflect can send it elsewhere (the deflecting player
+## isn't hit, so keeps their Heat); Grudge reacts once it lands.
+func _joker_hit(seat: int, damage: int) -> void:
+	var joker: JokerState = state.joker
+	var deflect := TrapOccurrence.new(TrapOccurrence.JOKER_HIT, seat, GameEvent.JOKER_SEAT)
+	_spring_traps(deflect)
+	# RULE-ASSUMPTION: a deflected hit can't be deflected again, and its new target is
+	# really hit by the Joker (Heat reset, Venom Fang, Grudge).
+	var hit_seat: int = deflect.redirect_seat if deflect.redirect_seat >= 0 else seat
+	var dealt: int = deal_damage(GameEvent.JOKER_SEAT, hit_seat, damage, joker.element, &"joker")
+	_set_heat(state.player(hit_seat), 0, &"joker_hit")
+	for fang: JokerModifier in joker.effects_with_id(JokerModifier.VENOM_FANG):
+		apply_poison(hit_seat, int(fang.params.get("tick_damage", 0)), int(fang.params.get("rounds", 0)),
+				fang.source_seat)
+	_spring_traps(TrapOccurrence.new(TrapOccurrence.JOKER_HIT_LANDED, hit_seat, GameEvent.JOKER_SEAT, null,
+			{"damage": dealt}))
 
 
 ## Who the Joker hits: the first group of its targeting order (everyone tied), or
@@ -528,6 +628,17 @@ func _tick_poisons() -> void:
 		for i: int in p.poisons.size() - remaining.size():
 			_emit(GameEvents.StatusEnded.new(p.seat, Status.POISON, &"expired"))
 		p.poisons = remaining
+	# Healing from Poison to Healing ticks in the same step, after the poison.
+	for p: PlayerState in state.players:
+		if not p.is_alive or p.heals.is_empty():
+			continue
+		for stack: DotStack in p.heals:
+			heal(p.seat, stack.damage, Status.HEALING)
+			stack.rounds_left -= 1
+		var still_healing: Array[DotStack] = p.heals.filter(func(s: DotStack) -> bool: return s.rounds_left > 0)
+		for i: int in p.heals.size() - still_healing.size():
+			_emit(GameEvents.StatusEnded.new(p.seat, Status.HEALING, &"expired"))
+		p.heals = still_healing
 
 
 func _expire_roots() -> void:
@@ -549,6 +660,7 @@ func _resolve_eliminations() -> void:
 			p.is_alive = false
 			eliminated_any = true
 			_emit(GameEvents.PlayerEliminated.new(p.seat, state.round_number))
+			_remove_traps_on(p.seat)
 	if not eliminated_any:
 		return
 	var alive: Array[int] = state.alive_seats()
@@ -556,6 +668,15 @@ func _resolve_eliminations() -> void:
 		_finish(alive[0], false)
 	elif alive.is_empty():
 		_finish(-1, true)
+
+
+## Traps sitting on an eliminated player go to the discard pile unfired.
+func _remove_traps_on(seat: int) -> void:
+	for trap: PlacedTrap in state.traps.duplicate():
+		if trap.host_seat == seat:
+			state.traps.erase(trap)
+			state.deck.discard([trap.card])
+			_emit(GameEvents.TrapRemoved.new(trap.trap_id, &"host_eliminated"))
 
 
 func _finish(winner_seat: int, is_draw: bool) -> void:

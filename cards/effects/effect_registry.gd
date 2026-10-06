@@ -14,6 +14,13 @@ const _EFFECTS: Dictionary[StringName, GDScript] = {
 	&"shed_skin": preload("res://cards/effects/shed_skin_effect.gd"),
 	&"joker_modifier": preload("res://cards/effects/joker_modifier_effect.gd"),
 	&"joker_type": preload("res://cards/effects/joker_type_effect.gd"),
+	&"trap_poison_to_healing": preload("res://cards/effects/traps/poison_to_healing_trap.gd"),
+	&"trap_joker_deflect": preload("res://cards/effects/traps/joker_deflect_trap.gd"),
+	&"trap_backfire": preload("res://cards/effects/traps/backfire_trap.gd"),
+	&"trap_tripwire": preload("res://cards/effects/traps/tripwire_trap.gd"),
+	&"trap_type_snare": preload("res://cards/effects/traps/type_snare_trap.gd"),
+	&"trap_grudge": preload("res://cards/effects/traps/grudge_trap.gd"),
+	&"trap_wellspring": preload("res://cards/effects/traps/wellspring_trap.gd"),
 }
 
 

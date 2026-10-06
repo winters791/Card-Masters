@@ -174,6 +174,80 @@ class TypeChangeBlocked extends GameEvent:
 		return "Seat %d is Rooted: type change fails" % seat
 
 
+## A trap is placed. Others see only where it is (host_seat); the card and its owner
+## stay hidden until it fires.
+class TrapPlaced extends GameEvent:
+	var trap_id: int
+	## A seat, or PlacedTrap.POOL.
+	var host_seat: int
+	var owner_seat: int
+	var card: CardData
+
+	func _init(p_trap_id: int, p_host_seat: int, p_owner_seat: int, p_card: CardData) -> void:
+		trap_id = p_trap_id
+		host_seat = p_host_seat
+		owner_seat = p_owner_seat
+		card = p_card
+
+	func view_for(viewer_seat: int) -> GameEvent:
+		if viewer_seat == owner_seat:
+			return self
+		return TrapPlaced.new(trap_id, host_seat, -1, null)
+
+	func describe() -> String:
+		var spot: String = "the collective pool" if host_seat == PlacedTrap.POOL else "seat %d" % host_seat
+		return "A trap is placed on %s" % spot
+
+
+## A trap fires: its card and owner are revealed, and the owner's Heat lands.
+class TrapFired extends GameEvent:
+	var trap_id: int
+	var card: CardData
+	var owner_seat: int
+	var host_seat: int
+	## The player it fired for.
+	var subject_seat: int
+
+	func _init(p_trap_id: int, p_card: CardData, p_owner_seat: int, p_host_seat: int, p_subject_seat: int) -> void:
+		trap_id = p_trap_id
+		card = p_card
+		owner_seat = p_owner_seat
+		host_seat = p_host_seat
+		subject_seat = p_subject_seat
+
+	func describe() -> String:
+		return "Seat %d's %s fires on seat %d" % [owner_seat, card.display_name, subject_seat]
+
+
+## A trap left the table without firing (its player was eliminated).
+class TrapRemoved extends GameEvent:
+	var trap_id: int
+	var reason: StringName
+
+	func _init(p_trap_id: int, p_reason: StringName) -> void:
+		trap_id = p_trap_id
+		reason = p_reason
+
+	func describe() -> String:
+		return "Trap %d is removed (%s)" % [trap_id, reason]
+
+
+class Healed extends GameEvent:
+	var seat: int
+	var amount: int
+	var hp_after: int
+	var cause: StringName
+
+	func _init(p_seat: int, p_amount: int, p_hp_after: int, p_cause: StringName) -> void:
+		seat = p_seat
+		amount = p_amount
+		hp_after = p_hp_after
+		cause = p_cause
+
+	func describe() -> String:
+		return "Seat %d heals %d (%s) -> %d HP" % [seat, amount, cause, hp_after]
+
+
 ## A lasting effect lands on a player (see Status).
 class StatusApplied extends GameEvent:
 	var seat: int

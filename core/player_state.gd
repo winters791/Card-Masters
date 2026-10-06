@@ -12,6 +12,8 @@ var is_alive: bool = true
 var next_turn_restrictions: Array[StringName] = []
 var poisons: Array[DotStack] = []
 var burns: Array[DotStack] = []
+## Healing over time (Poison to Healing turns a poison into one of these).
+var heals: Array[DotStack] = []
 ## Rot waiting for this player's next resist.
 var is_rotted: bool = false
 ## Rooted (type can't change) through the end of this round number; 0 = not rooted.

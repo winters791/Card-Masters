@@ -112,6 +112,10 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 - **When a trap fires, everyone learns who placed it.**
 - Collective traps feel "safe" early (they hurt no one until triggered); personal traps carry social weight from the start.
 - Collective traps can be used to protect yourself, since you can't target yourself with cards (e.g. a Joker-deflect trap).
+- **Placement:** a trap on player X only watches X ("you" in the card text = X). A trap in the collective pool watches everyone and fires for the first player it applies to.
+- **Timing:** a trap fires the moment its trigger happens (Backfire mid-attack, Joker Deflect mid-Joker-attack). Its Heat lands for its owner right then, before its effect, so always before the Joker's hit.
+- **One-shot:** a trap fires once, then goes to the discard pile. Traps sitting on a player who is eliminated are discarded unfired.
+- **Healing** (Poison to Healing, Wellspring) never takes a player above 100 HP.
 
 ---
 
@@ -286,13 +290,13 @@ Guardrail: these always cost you more Heat than they give.
 
 | Card | Base | Trigger → effect |
 |---|---|---|
-| Poison to Healing | 1 | Someone stacks poison → it becomes healing instead |
-| Joker Deflect | 2 | The Joker would hit you → it redirects 2 seats anticlockwise (no Heat reset) |
-| Backfire | 2 | The next targeted attack on you → it hits the attacker instead |
+| Poison to Healing | 1 | Someone stacks poison → it becomes healing instead (same amount per round, same rounds: Venom becomes heal 5 × 3, ticking in the poison step) |
+| Joker Deflect | 2 | The Joker would hit you → it redirects 2 *living* seats anticlockwise (if that lands back on you, i.e. only 2 players left, it goes to the other player). You keep your Heat |
+| Backfire | 2 | The next targeted card that deals **direct damage** to you (Attacks, Shed Skin) → it hits its player instead; they still pay its Heat |
 | Tripwire | 1 | The next player to play a targeted card → they gain +3 Heat |
 | Type Snare | 2 | The next player to change type → they take 20 damage |
-| Grudge | 2 | You get hit by the Joker → the hottest *other* player takes the same damage |
-| Wellspring | 1 | A Water card enters the collective pool → all Water players heal 10 |
+| Grudge | 2 | You get hit by the Joker → the hottest *other* player (everyone tied) takes the same damage. The Grudge's own Heat lands first, so its owner can end up the hottest |
+| Wellspring | 1 | **Collective pool only.** A Water card enters the collective pool → all Water players heal 10 (after that card resolves) |
 
 ---
 

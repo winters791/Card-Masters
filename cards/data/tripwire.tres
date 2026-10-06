@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" path="res://cards/card_data.gd" id="1_card"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"tripwire"
+display_name = "Tripwire"
+family = 6
+element = 0
+base_heat = 1
+rarity = 0
+mode_lock = 0
+effect_id = &"trap_tripwire"
+params = {
+"heat": 3
+}
+rules_text = "The next player to play a targeted card (at the covered player) gains +3 Heat."
