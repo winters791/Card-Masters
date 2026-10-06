@@ -5,6 +5,10 @@ extends CardEffect
 ## damage uses their current type.
 
 
+func needs_element_choice() -> bool:
+	return true
+
+
 ## Shed Skin always changes to a different type than your current one.
 func validate_play(state: GameState, intent: Intents.PlayCard) -> String:
 	if not Element.Type.values().has(intent.chosen_element):

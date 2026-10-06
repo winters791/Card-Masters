@@ -66,6 +66,11 @@ godot --headless -s addons/gut/gut_cmdln.gd -gtest=res://tests/test_project_setu
 # Parse-check a single script (non-zero exit on syntax/type errors)
 godot --headless --path . --check-only -s res://core/some_script.gd
 
+# Simulate bot matches and print the balance report (Phase 3)
+godot --headless --path . -s res://ai/simulate.gd -- --matches=1000 --players=4 --bots=greedy --seed=1
+#   --bots takes one name for every seat or a comma list per seat (greedy, random)
+#   --json=path / --csv=path also write the summary / one row per match
+
 # Run the game
 godot --path .
 ```
@@ -78,9 +83,7 @@ Run the tests before every commit. Add a test for every rule and every card.
 
 ## Rule gaps to confirm with Uday before implementing
 
-These aren't settled in `design.md` yet. Raise them when you reach the relevant roadmap item:
-
-1. **Collective pool persistence:** current assumption (now in code) is that collective cards resolve immediately (hit everyone once) and only traps remain in the pool. Confirm.
+None open right now. When you find a new one, list it here and raise it when you reach the relevant roadmap item.
 
 ## Git
 

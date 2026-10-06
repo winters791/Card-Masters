@@ -17,4 +17,4 @@ This repo holds the **Godot 4.x prototype**.
 
 ## Status
 
-Phases 1 and 2 done: a headless rules core that plays full matches with all 37 cards of the first batch (attacks, damage over time, type changes, disruption, Heat manipulation, Joker modifiers and traps). Next up: Phase 3, bots and a simulation runner to sanity-check the numbers.
+Phases 1 and 2 done: a headless rules core that plays full matches with all 37 cards of the first batch (attacks, damage over time, type changes, disruption, Heat manipulation, Joker modifiers and traps). Phase 3 done too: random and greedy bots plus a headless simulator (`godot --headless --path . -s res://ai/simulate.gd`). Next up: Phase 4, a hotseat UI so humans can play.
