@@ -17,7 +17,7 @@ const MAX_DISCARDS_PER_TURN: int = 1
 const HAND_CAP: int = 10
 
 # Turn (§3)
-const TURN_TIMER_SECONDS: float = 30.0
+const TURN_TIMER_SECONDS: float = 120.0
 
 # Type chart multipliers (§2)
 const STRONG_MULTIPLIER: float = 2.0

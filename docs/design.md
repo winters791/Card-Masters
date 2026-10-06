@@ -54,7 +54,7 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 ## 3. Turn structure
 
 - **Sequential turns.** The **starting seat rotates every round** (seat 1 starts round 1, seat 2 starts round 2, …). Rotation follows the original seat numbers: if the scheduled seat is eliminated, the next living seat clockwise starts instead (so a seat can occasionally start two rounds in a row).
-- **Turn timer:** 30 seconds. Running out of time **ends your turn**; cards drawn so far stay in your hand. It counts as a **skip** only if you haven't played a card.
+- **Turn timer:** 2 minutes. Running out of time **ends your turn**; cards drawn so far stay in your hand. It counts as a **skip** only if you haven't played a card.
 - **Per turn, play up to 2 cards:** one from each slot (below).
 - **Skipping is allowed**, but costs Heat (see §5) and forgoes setting traps or changing type.
 
@@ -215,7 +215,7 @@ Players change the Joker's behaviour with Joker cards. Examples:
 
 ### Pacing (starting point for playtesting)
 
-- ~30-second turns → ~2 minutes per round with 4 players → **~10 rounds** per match (rounds speed up as players drop out).
+- Typical turns ~30 seconds (the timer only caps a turn at 2 minutes) → ~2 minutes per round with 4 players → **~10 rounds** per match (rounds speed up as players drop out).
 - **Round 5 is the danger zone:** the Joker deals 50, or 100 at 2x, which is lethal against the wrong type.
 - **Round 10:** the Joker one-shots anyone at neutral.
 - **Card damage:** mostly 10–30. Big cards (~40) are rare, top-tier and 3 Base Heat.

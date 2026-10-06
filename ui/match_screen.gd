@@ -142,7 +142,7 @@ func _process(delta: float) -> void:
 			step_bot()
 	elif not awaiting_pass:
 		time_left -= delta
-		_timer_label.text = "Time left: %d s" % ceili(maxf(time_left, 0.0))
+		_timer_label.text = "Time left: %s" % _clock(time_left)
 		if time_left <= 0.0:
 			pending_play.clear()
 			submit(Intents.Timeout.new(seat))
@@ -694,7 +694,7 @@ func _refresh_info() -> void:
 		_timer_label.text = "%s is thinking…" % UiStyle.player_name(seat)
 		_hint_label.text = ""
 	else:
-		_timer_label.text = "Time left: %d s" % ceili(maxf(time_left, 0.0))
+		_timer_label.text = "Time left: %s" % _clock(time_left)
 		var slots: String = "Played: %s / %s" % [
 			"trap or Joker card" if state_has_slot(CardData.Slot.ONE) else "-",
 			"attack or effect" if state_has_slot(CardData.Slot.TWO) else "-"]
@@ -703,6 +703,12 @@ func _refresh_info() -> void:
 		else:
 			_hint_label.text = "Drag a card onto a player's pool to target them, or onto the collective pool to hit everyone.\n" + slots
 	_message_label.text = message
+
+
+## Seconds as m:ss for the turn timer.
+static func _clock(seconds: float) -> String:
+	var total: int = ceili(maxf(seconds, 0.0))
+	return "%d:%02d" % [total / 60, total % 60]
 
 
 func state_has_slot(slot: CardData.Slot) -> bool:
