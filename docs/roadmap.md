@@ -77,7 +77,7 @@ Placeholder-art UI on top of the rules core; 2–4 humans on one screen (bots ca
 - [x] Two play slots, mode picker (collective / targeted), target picker.
 - [x] Collective pool in the middle; face-down trap markers showing where traps sit.
 - [x] Joker (host) display: current damage, type, modifier slots, who it will hit.
-- [x] 30-second turn timer (timeout = skip).
+- [x] 2-minute turn timer (timeout = skip). *(Was 30 seconds; Uday found that far too short.)*
 - [x] Event log panel; end-of-match screen.
 
 **Done when:** four people can play a full match on one computer. *(Built and tested with scripted and bot players; waiting on a real playtest. The battle screen follows Uday's table sketch: Joker on top, collective pool in the middle with the draw and discard piles, players and their player pools around the table, fanned hand with hover details and drag-to-play.)*

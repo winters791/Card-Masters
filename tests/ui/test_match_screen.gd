@@ -197,3 +197,17 @@ func test_hand_cards_can_be_dragged_only_on_your_turn() -> void:
 	var live: Array[Node] = screen._hand_layer.get_children().filter(
 			func(n: Node) -> bool: return not n.is_queued_for_deletion())
 	assert_true(live.is_empty(), "no hand (so nothing to drag) behind the pass screen")
+
+
+func test_turn_timer_is_two_minutes_shown_as_minutes() -> void:
+	assert_eq(Config.TURN_TIMER_SECONDS, 120.0)
+	assert_eq(MatchScreen._clock(120.0), "2:00")
+	assert_eq(MatchScreen._clock(65.2), "1:06")
+	assert_eq(MatchScreen._clock(-3.0), "0:00")
+
+
+func test_two_minutes_are_not_up_after_thirty_seconds() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	screen._process(31.0)
+	assert_eq(screen.tc.state.current_seat, 0, "still player 1's turn")

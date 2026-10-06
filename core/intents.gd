@@ -42,7 +42,7 @@ class EndTurn extends Intent:
 		seat = p_seat
 
 
-## The 30-second turn timer ran out (§3). Ends the turn like EndTurn.
+## The 2-minute turn timer ran out (§3). Ends the turn like EndTurn.
 class Timeout extends Intent:
 	func _init(p_seat: int) -> void:
 		seat = p_seat

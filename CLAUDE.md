@@ -49,7 +49,7 @@ Conventions:
 - **Traps use the event system:** a trap subscribes to an event pattern and fires when matched. Placement is public, effect is hidden until it fires.
 - **Hidden information** (hands, trap effects) is filtered per viewer by a `get_view_for(player_id)` function, so hotseat and later networking share one code path.
 - Concrete events are inner classes of `GameEvents` (`GameEvents.DamageDealt`), intents of `Intents` (`Intents.PlayCard`); `TurnController.submit(intent)` returns `""` or the rejection reason.
-- Magic numbers (HP 100, Joker +10, hand sizes, timer 30s, multipliers) live in one `core/config.gd`, not scattered through code. Balancing will change them.
+- Magic numbers (HP 100, Joker +10, hand sizes, turn timer 2 min, multipliers) live in one `core/config.gd`, not scattered through code. Balancing will change them.
 
 ## Commands
 
