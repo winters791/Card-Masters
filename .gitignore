@@ -1,0 +1,17 @@
+# Godot 4
+.godot/
+.import/
+export_presets.cfg
+*.translation
+mono_crash.*.json
+
+# Exports
+build/
+exports/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.tmp
+.vscode/
+.idea/
