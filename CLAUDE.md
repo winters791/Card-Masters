@@ -44,7 +44,7 @@ Conventions:
 
 - **Core classes extend `RefCounted`/`Resource`, never `Node`.** No scene tree, no `get_tree()`, no timers, no input in `core/`.
 - **Determinism:** all randomness goes through one `RandomNumberGenerator` owned by `GameState`, seeded at match start. Same seed + same moves = same match.
-- **Intents in, events out.** UI/bots submit actions (`PlayCardIntent`, `SkipIntent`…); core validates, applies, and emits a typed event log (`DamageDealt`, `HeatChanged`, `TrapFired`, `JokerAttacked`, `PlayerEliminated`…). UI animates from events; it never mutates state.
+- **Intents in, events out.** UI/bots submit actions (`PlayCardIntent`, `SkipIntent`…); core validates, applies, and emits a typed event log (`DamageDealt`, `HeatChanged`, `TrapFired`, `JokerAttacked`, `PlayerEliminated`…). UI animates from events; it never mutates state. `MatchScreen._animate()` maps each event (as `get_view_for` the viewer shows it) to effects queued on `FxLayer`; new event types need an entry there.
 - **Data-driven cards:** each card is a `.tres` of a `CardData` resource (id, name, family, slot, element type, base_heat, rarity, mode_lock, effect params). Effects live in small scripts keyed by family/effect id; avoid one giant `match` over card names.
 - **Traps use the event system:** a trap subscribes to an event pattern and fires when matched. Placement is public, effect is hidden until it fires.
 - **Hidden information** (hands, trap effects) is filtered per viewer by a `get_view_for(player_id)` function, so hotseat and later networking share one code path.

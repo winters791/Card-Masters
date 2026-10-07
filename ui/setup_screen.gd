@@ -15,21 +15,39 @@ var start_button: Button
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	theme = UiStyle.make_theme()
+	var backdrop := Figures.TableBackdrop.new()
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(backdrop)
 	var center := CenterContainer.new()
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
+	var stage := HBoxContainer.new()
+	center.add_child(stage)
+	# The host, waiting for a show.
+	var joker := Joker3D.new()
+	joker.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	stage.add_child(joker)
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", UiStyle.panel_style(UiStyle.PANEL_COLOR))
-	center.add_child(panel)
+	panel.add_theme_stylebox_override("panel", UiStyle.panel_style(UiStyle.PANEL_COLOR, UiStyle.PANEL_BORDER, 2, 22, 16, 10))
+	stage.add_child(panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	panel.add_child(box)
 
 	var title := Label.new()
-	title.text = "Card Masters (prototype)"
-	title.add_theme_font_size_override("font_size", 36)
+	title.text = "Card Masters"
+	title.add_theme_font_size_override("font_size", 42)
+	title.add_theme_color_override("font_color", Color(0.98, 0.82, 0.45))
+	title.add_theme_constant_override("outline_size", 8)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
+	var tagline := Label.new()
+	tagline.text = "Every card is a weapon. The Joker loves drama."
+	tagline.add_theme_color_override("font_color", UiStyle.MUTED_INK)
+	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(tagline)
+	box.add_child(HSeparator.new())
 
 	var count_row := HBoxContainer.new()
 	box.add_child(count_row)
@@ -62,6 +80,8 @@ func _ready() -> void:
 
 	start_button = Button.new()
 	start_button.text = "Start match"
+	start_button.custom_minimum_size = Vector2(0, 46)
+	start_button.add_theme_font_size_override("font_size", 20)
 	start_button.pressed.connect(_on_start)
 	box.add_child(start_button)
 	_update_seats()

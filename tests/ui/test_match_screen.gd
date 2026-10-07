@@ -150,10 +150,64 @@ func test_an_all_bot_match_plays_to_the_end_screen() -> void:
 		guard += 1
 		screen.step_bot()
 	assert_true(screen.tc.state.is_over())
+	assert_false(screen._end_overlay.visible, "the end screen waits for the last animations")
+	screen._fx.flush()
 	assert_true(screen._end_overlay.visible)
 	watch_signals(screen)
 	(screen._end_overlay.get_node("Box/NewMatch") as Button).pressed.emit()
 	assert_signal_emitted(screen, "back_to_setup")
+
+
+func test_bots_wait_for_the_play_button() -> void:
+	var screen: MatchScreen = _screen(["greedy", "human"])
+	screen._fx.flush()
+	screen._process(5.0)
+	screen._process(5.0)
+	assert_eq(screen.tc.state.current_seat, 0, "no auto fast-forward")
+	assert_true(screen._bot_button.visible)
+	screen._bot_button.pressed.emit()
+	var guard: int = 0
+	while screen.tc.state.current_seat == 0 and guard < 20:
+		guard += 1
+		screen._fx.flush()
+		screen._process(MatchScreen.BOT_STEP_SECONDS)
+	assert_eq(screen.tc.state.current_seat, 1, "the bot played its whole turn")
+	assert_false(screen._bot_button.visible, "a human's turn now")
+
+
+func test_auto_play_bots_toggle() -> void:
+	var screen: MatchScreen = _screen(["greedy", "random", "human"])
+	assert_true(screen._auto_toggle.visible)
+	screen._auto_toggle.button_pressed = true
+	assert_true(screen.auto_play_bots)
+	assert_false(screen._bot_button.visible)
+	var guard: int = 0
+	while screen.tc.state.current_seat != 2 and guard < 40:
+		guard += 1
+		screen._fx.flush()
+		screen._process(MatchScreen.BOT_STEP_SECONDS)
+	assert_eq(screen.tc.state.current_seat, 2, "both bots played on their own")
+
+
+func test_bots_wait_for_the_animations() -> void:
+	var screen: MatchScreen = _screen(["greedy", "human"])
+	screen.set_auto_play_bots(true)
+	assert_true(screen._fx.busy(), "the round 1 banner is still showing")
+	var events: int = screen.tc.state.events.size()
+	screen._process(MatchScreen.BOT_STEP_SECONDS)
+	assert_eq(screen.tc.state.events.size(), events)
+
+
+func test_every_event_kind_animates_without_errors() -> void:
+	var screen: MatchScreen = _screen(["greedy", "random", "greedy", "random"], 11)
+	screen.set_auto_play_bots(true)
+	var guard: int = 0
+	while not screen.tc.state.is_over() and guard < MatchRunner.MAX_INTENTS:
+		guard += 1
+		screen.step_bot()
+		screen._fx.flush()
+	assert_true(screen.tc.state.is_over())
+	assert_eq(screen._seen_events, screen.tc.state.events.size(), "every event was animated")
 
 
 func test_log_lines_speak_in_players_and_drama() -> void:
