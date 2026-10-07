@@ -19,6 +19,8 @@ var draggable: bool = false
 var face_down: bool = false
 var mini: bool = false
 var selected: bool = false
+## Its slot was already used this turn: drawn dark and can't be dragged.
+var spent: bool = false
 
 var _rest_position: Vector2
 var _rest_rotation: float
@@ -33,6 +35,8 @@ static func make(p_card: CardData, p_mini: bool = false, p_face_down: bool = fal
 
 
 func _ready() -> void:
+	if spent:
+		modulate = Color(0.42, 0.42, 0.42)
 	custom_minimum_size = MINI_SIZE if mini else FULL_SIZE
 	size = custom_minimum_size
 	pivot_offset = size / 2.0
@@ -65,11 +69,18 @@ func _build() -> void:
 		box.add_child(_label("TRAP" if not mini else "?", 13 if mini else 18, HORIZONTAL_ALIGNMENT_CENTER))
 		box.alignment = BoxContainer.ALIGNMENT_CENTER
 		return
+	# Header: slot badge in the corner (star = slot 1, circle = slot 2), then the name.
 	var title := _label(card.display_name, 9 if mini else 14, HORIZONTAL_ALIGNMENT_CENTER)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var bar := PanelContainer.new()
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_theme_stylebox_override("panel", UiStyle.panel_style(header, Color(0, 0, 0, 0), 0, 2 if mini else 6))
-	bar.add_child(title)
+	bar.add_theme_stylebox_override("panel", UiStyle.panel_style(header, Color(0, 0, 0, 0), 0, 2 if mini else 4))
+	var header_row := HBoxContainer.new()
+	header_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header_row.add_theme_constant_override("separation", 2)
+	header_row.add_child(Figures.SlotBadge.new(card.slot(), 10.0 if mini else 16.0))
+	header_row.add_child(title)
+	bar.add_child(header_row)
 	box.add_child(bar)
 	if mini:
 		return
@@ -119,7 +130,7 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if not draggable:
+	if not draggable or spent:
 		return null
 	var preview := CardView.make(card)
 	preview.modulate.a = 0.85

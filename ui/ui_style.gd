@@ -47,6 +47,11 @@ static func family_name(family: CardData.Family) -> String:
 	}[family]
 
 
+## "star" (slot 1: traps and Joker cards) or "circle" (slot 2: attacks and effects).
+static func slot_symbol(slot: CardData.Slot) -> String:
+	return "star" if slot == CardData.Slot.ONE else "circle"
+
+
 static func modifier_name(id: StringName) -> String:
 	return String(id).replace("_", " ").capitalize()
 

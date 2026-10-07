@@ -670,12 +670,18 @@ func _refresh_hand(view: Dictionary) -> void:
 	for i: int in count:
 		var view_card := CardView.make(hand[i])
 		view_card.hand_index = i
-		view_card.draggable = is_my_turn()
+		view_card.spent = is_my_turn() and slot_spent((hand[i] as CardData).slot())
+		view_card.draggable = is_my_turn() and not view_card.spent
 		view_card.selected = i == selected_index
 		view_card.hovered.connect(_show_detail)
 		view_card.unhovered.connect(func(_v: CardView) -> void: _detail.visible = false)
 		view_card.clicked.connect(func(v: CardView) -> void:
-			if is_my_turn():
+			if not is_my_turn():
+				return
+			if v.spent:
+				message = "You've already played a %s card this turn" % UiStyle.slot_symbol(v.card.slot())
+				_refresh()
+			else:
 				select_card(v.hand_index))
 		_hand_layer.add_child(view_card)
 		var offset: float = i - mid
@@ -695,11 +701,11 @@ func _refresh_info() -> void:
 		_hint_label.text = ""
 	else:
 		_timer_label.text = "Time left: %s" % _clock(time_left)
-		var slots: String = "Played: %s / %s" % [
-			"trap or Joker card" if state_has_slot(CardData.Slot.ONE) else "-",
-			"attack or effect" if state_has_slot(CardData.Slot.TWO) else "-"]
+		var slots: String = "Star (trap / Joker): %s   Circle (attack / effect): %s" % [
+			"played" if state_has_slot(CardData.Slot.ONE) else "free",
+			"played" if state_has_slot(CardData.Slot.TWO) else "free"]
 		if tc.state.phase == GameState.Phase.DRAW:
-			_hint_label.text = "Draw up to 3 from the draw pile, discard 1 if you like, then drag cards onto a pool to play (1 trap/Joker card + 1 attack/effect).\n" + slots
+			_hint_label.text = "Draw up to 3 from the draw pile, discard 1 if you like, then drag cards onto a pool to play: 1 star card + 1 circle card.\n" + slots
 		else:
 			_hint_label.text = "Drag a card onto a player's pool to target them, or onto the collective pool to hit everyone.\n" + slots
 	_message_label.text = message
@@ -713,6 +719,14 @@ static func _clock(seconds: float) -> String:
 
 func state_has_slot(slot: CardData.Slot) -> bool:
 	return tc.state.slots_played.has(slot)
+
+
+## True when no more cards of this slot can be played this turn: the slot was used,
+## or the player is Silenced and has already played their one card.
+func slot_spent(slot: CardData.Slot) -> bool:
+	if tc.state.slots_played.has(slot):
+		return true
+	return tc.state.turn_restrictions.has(TurnRestriction.ONE_CARD) and not tc.state.slots_played.is_empty()
 
 
 func _refresh_logs() -> void:
@@ -766,7 +780,8 @@ func _detail_text(card: CardData) -> String:
 	var lines: PackedStringArray = []
 	lines.append("[font_size=20][b]%s[/b][/font_size]" % card.display_name)
 	lines.append("%s · %s" % [UiStyle.family_name(card.family),
-			"slot 1 (trap / Joker)" if card.slot() == CardData.Slot.ONE else "slot 2 (attack / effect)"])
+			"star card: slot 1 (trap / Joker)" if card.slot() == CardData.Slot.ONE
+					else "circle card: slot 2 (attack / effect)"])
 	if card.element != Element.Type.NORMAL or card.family == CardData.Family.ATTACK:
 		lines.append("Type: %s" % Element.type_name(card.element))
 	lines.append("")
