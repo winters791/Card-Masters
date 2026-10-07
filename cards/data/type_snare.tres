@@ -13,6 +13,6 @@ rarity = 1
 mode_lock = 0
 effect_id = &"trap_type_snare"
 params = {
-"damage": 20
+"damage": 10
 }
-rules_text = "The next player to change type (the covered player) takes 20 damage."
+rules_text = "The next player to change type (the covered player) takes 10 damage."

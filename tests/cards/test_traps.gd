@@ -166,7 +166,7 @@ func test_poison_to_healing_turns_the_poison_into_healing() -> void:
 	assert_eq(tc.state.player(2).heat, 2)
 	tc.submit(Intents.EndTurn.new(0))
 	_finish_round(tc)
-	assert_eq(tc.state.player(1).hp, 75, "heals 5 in the poison step")
+	assert_eq(tc.state.player(1).hp, 73, "heals 3 in the poison step")
 
 
 func test_healing_never_goes_above_100() -> void:
@@ -227,7 +227,7 @@ func test_backfire_bounces_a_damage_card_back_at_its_player() -> void:
 	tc.state.player(0).element = Element.Type.WATER
 	assert_eq(_play(tc, _card(&"thornlash"), 1), "")
 	assert_eq(tc.state.player(1).hp, 100)
-	assert_eq(tc.state.player(0).hp, 60, "20 Grass at 2x vs its Water player")
+	assert_eq(tc.state.player(0).hp, 80, "10 Grass at 2x vs its Water player")
 	assert_eq(tc.state.player(0).heat, 4, "still pays the card's Heat")
 
 
@@ -244,7 +244,7 @@ func test_backfire_bounces_shed_skin_damage_but_not_the_type_change() -> void:
 	_plant(tc, &"backfire", 2, 1)
 	_play(tc, _card(&"shed_skin"), 1, Element.Type.FIRE)
 	assert_eq(tc.state.player(0).element, Element.Type.FIRE)
-	assert_eq(tc.state.player(0).hp, 90)
+	assert_eq(tc.state.player(0).hp, 95)
 	assert_eq(tc.state.player(1).hp, 100)
 
 
@@ -278,7 +278,7 @@ func test_type_snare_hits_the_next_player_to_change_type() -> void:
 	_plant(tc, &"type_snare", 2, 1)
 	_play(tc, _card(&"convert"), 1, Element.Type.GRASS)
 	assert_eq(tc.state.player(1).element, Element.Type.GRASS)
-	assert_eq(tc.state.player(1).hp, 80)
+	assert_eq(tc.state.player(1).hp, 90)
 
 
 func test_type_snare_ignores_failed_changes() -> void:
@@ -325,9 +325,9 @@ func test_wellspring_heals_water_players_after_a_water_card_hits_the_pool() -> v
 	tc.state.player(1).element = W
 	tc.state.player(2).element = W
 	assert_eq(_play(tc, _card(&"tidal_crash")), "")
-	assert_eq(tc.state.player(0).hp, 80, "Normal: hit, not healed")
-	assert_eq(tc.state.player(1).hp, 90, "Water: hit for 20, healed 10")
-	assert_eq(tc.state.player(2).hp, 90)
+	assert_eq(tc.state.player(0).hp, 90, "Normal: hit, not healed")
+	assert_eq(tc.state.player(1).hp, 100, "Water: hit for 10, healed 10")
+	assert_eq(tc.state.player(2).hp, 100)
 
 
 func test_wellspring_ignores_other_cards() -> void:

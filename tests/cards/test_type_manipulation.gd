@@ -157,7 +157,7 @@ func test_shed_skin_changes_your_type_and_hits_with_it() -> void:
 	tc.state.player(1).element = G
 	assert_eq(_play(tc, _card(&"shed_skin"), 1, F), "")
 	assert_eq(tc.state.player(0).element, F)
-	assert_eq(tc.state.player(1).hp, 80, "10 Fire at 2x vs Grass")
+	assert_eq(tc.state.player(1).hp, 90, "5 Fire at 2x vs Grass")
 	assert_eq(tc.state.player(0).heat, 3, "Base 1 x2 targeted, +1 for direct damage")
 
 
@@ -171,9 +171,9 @@ func test_collective_shed_skin_hits_everyone_including_you() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
 	tc.state.player(2).element = W
 	assert_eq(_play(tc, _card(&"shed_skin"), -1, F), "")
-	assert_eq(tc.state.player(0).hp, 90, "Fire vs Fire")
-	assert_eq(tc.state.player(1).hp, 90, "Fire vs Normal")
-	assert_eq(tc.state.player(2).hp, 95, "Fire vs Water")
+	assert_eq(tc.state.player(0).hp, 95, "Fire vs Fire")
+	assert_eq(tc.state.player(1).hp, 95, "Fire vs Normal")
+	assert_eq(tc.state.player(2).hp, 98, "Fire vs Water")
 	assert_eq(tc.state.player(0).heat, 2, "Base 1 collective, +1 for direct damage")
 
 
@@ -184,4 +184,4 @@ func test_rooted_shed_skin_keeps_your_type_and_hits_with_it() -> void:
 	tc.apply_root(0, 1)
 	assert_eq(_play(tc, _card(&"shed_skin"), 1, G), "")
 	assert_eq(tc.state.player(0).element, W, "the change fails")
-	assert_eq(tc.state.player(1).hp, 80, "10 Water at 2x vs Fire")
+	assert_eq(tc.state.player(1).hp, 90, "5 Water at 2x vs Fire")

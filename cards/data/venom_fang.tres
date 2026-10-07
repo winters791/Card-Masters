@@ -15,6 +15,6 @@ effect_id = &"joker_modifier"
 params = {
 "modifier": &"venom_fang",
 "rounds": 3,
-"tick_damage": 5
+"tick_damage": 3
 }
-rules_text = "Every Joker hit also poisons (5 per round for 3 rounds). Stacks."
+rules_text = "Every Joker hit also poisons (3 per round for 3 rounds). Stacks."

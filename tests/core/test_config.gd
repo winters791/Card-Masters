@@ -9,11 +9,11 @@ func after_each() -> void:
 
 
 func test_override_changes_a_setting_for_new_matches() -> void:
-	assert_eq(Config.override("STARTING_HP", "250"), "")
-	assert_eq(Config.STARTING_HP, 250)
-	assert_eq(Config.MAX_HP, 250, "the healing cap follows starting HP")
+	assert_eq(Config.override("STARTING_HP", "180"), "")
+	assert_eq(Config.STARTING_HP, 180)
+	assert_eq(Config.MAX_HP, 180, "the healing cap follows starting HP")
 	var tc := TurnController.new(1, 2, Deck.build_card_list(CardCatalog.load_all()))
-	assert_eq(tc.state.player(0).hp, 250)
+	assert_eq(tc.state.player(0).hp, 180)
 
 
 func test_override_joker_growth() -> void:
@@ -32,6 +32,11 @@ func test_unknown_and_fixed_settings_are_refused() -> void:
 
 
 func test_defaults_match_the_design_doc() -> void:
-	assert_eq(Config.STARTING_HP, 100)
-	assert_eq(Config.JOKER_BASE_DAMAGE, 10)
-	assert_eq(Config.JOKER_DAMAGE_PER_ROUND, 10)
+	assert_eq(Config.default_value("STARTING_HP"), 250, "balance pass 1, option B")
+	assert_eq(Config.default_value("JOKER_BASE_DAMAGE"), 10)
+	assert_eq(Config.default_value("JOKER_DAMAGE_PER_ROUND"), 10)
+	assert_eq(Config.default_value("COPIES_COMMON"), 4)
+
+
+func test_rules_tests_run_at_100_hp() -> void:
+	assert_eq(Config.STARTING_HP, 100, "tests/support/pre_run.gd pins the test baseline")

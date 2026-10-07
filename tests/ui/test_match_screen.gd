@@ -53,7 +53,7 @@ func test_dropping_on_a_players_pool_targets_them_then_the_device_moves_on() -> 
 	assert_true(screen.can_drop(0, DropZone.Kind.PLAYER, 1))
 	assert_false(screen.can_drop(0, DropZone.Kind.PLAYER, 0), "not at yourself")
 	assert_eq(screen.drop_card(0, DropZone.Kind.PLAYER, 1), "")
-	assert_eq(screen.tc.state.player(1).hp, 90)
+	assert_eq(screen.tc.state.player(1).hp, 95)
 	assert_eq(screen.end_turn(), "")
 	assert_true(screen.awaiting_pass, "the next human gets the pass screen")
 	assert_eq(screen.viewer_seat, -1)
@@ -66,7 +66,7 @@ func test_dropping_on_the_collective_pool_hits_everyone() -> void:
 	assert_false(screen.can_drop(0, DropZone.Kind.PLAYER, 1), "Wildfire is pool only")
 	assert_eq(screen.drop_card(0, DropZone.Kind.POOL, -1), "")
 	for p: PlayerState in screen.tc.state.players:
-		assert_eq(p.hp, 85)
+		assert_eq(p.hp, 92)
 
 
 func test_dropping_on_the_discard_pile_discards() -> void:
@@ -84,7 +84,7 @@ func test_click_a_card_then_a_pool() -> void:
 	screen.select_card(0)
 	assert_eq(screen.selected_index, 0)
 	assert_eq(screen.click_zone(DropZone.Kind.PLAYER, 1), "")
-	assert_eq(screen.tc.state.player(1).hp, 90)
+	assert_eq(screen.tc.state.player(1).hp, 95)
 	assert_eq(screen.selected_index, -1)
 
 

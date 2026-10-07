@@ -13,4 +13,4 @@ rarity = 0
 mode_lock = 0
 effect_id = &"trap_poison_to_healing"
 params = {}
-rules_text = "Someone stacks poison on the covered player: it becomes healing instead (5 per round for 3 rounds)."
+rules_text = "Someone stacks poison on the covered player: it becomes healing instead (3 per round for 3 rounds with Venom)."

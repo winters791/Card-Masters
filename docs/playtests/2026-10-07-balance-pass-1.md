@@ -70,7 +70,7 @@ If HP grows to make matches last, the Joker's +10 a round no longer one-shots an
 
 **My suggestion:** playtest **B** first. It gets closest to the target, makes the Joker the main source of elimination, and keeps every card relevant compared with the HP bar. The round-10 one-shot line in §7 would become "by round 10 the Joker takes ~40% of a life bar per hit", or grow the Joker to +15 a round if the matches still feel long with people.
 
-Nothing in the game has changed yet. The defaults in `core/config.gd` and the card files are still the design-doc values until Uday picks.
+**Decision (7 Oct): Uday picked B.** `core/config.gd` now starts players at 250 HP, every card's direct damage and poison/burn tick is halved (rounding up: Wildfire 15 → 8, Venom 5 → 3), and design.md §2, §7 and §8 say so. Next step: human playtests with these numbers.
 
 ## Tools added in this pass
 
