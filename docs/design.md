@@ -65,6 +65,7 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 | Slot 1 | Trap **or** Joker modifier | Trap Heat lands later; Joker Heat lands now |
 | Slot 2 | Attack **or** Effect | **Attack** = pure typed damage. **Effect** = manipulation (type changes, type swaps, debuffs); **+1 Heat** if it also deals direct damage |
 
+- **Card corner symbols:** slot 1 cards (traps, Joker cards) show a **star**, slot 2 cards (attacks, effects) a **circle**. Once you've played a card from a slot this turn, the rest of that slot's cards in your hand are shown dark.
 - Every turn is a statement of intent: **trap + effect** is a quiet setup turn (Heat deferred), **Joker + attack** is an aggressive turn (Heat now).
 - Every effect harms someone in some way. Healing exists only indirectly (e.g. through traps).
 

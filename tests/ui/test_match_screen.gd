@@ -211,3 +211,69 @@ func test_two_minutes_are_not_up_after_thirty_seconds() -> void:
 	screen.confirm_pass()
 	screen._process(31.0)
 	assert_eq(screen.tc.state.current_seat, 0, "still player 1's turn")
+
+
+func _live_hand(screen: MatchScreen) -> Array[CardView]:
+	var views: Array[CardView] = []
+	for node: Node in screen._hand_layer.get_children():
+		if not node.is_queued_for_deletion():
+			views.append(node as CardView)
+	return views
+
+
+func _set_hand(screen: MatchScreen, ids: Array[StringName]) -> void:
+	var hand: Array[CardData] = screen.tc.state.player(screen.tc.state.current_seat).hand
+	hand.clear()
+	for id: StringName in ids:
+		hand.append(CardCatalog.by_id(id))
+	screen.select_card(-1)
+
+
+func _badge(view: CardView) -> Figures.SlotBadge:
+	for node: Node in view.find_children("*", "", true, false):
+		if node is Figures.SlotBadge:
+			return node
+	return null
+
+
+func test_cards_show_a_star_for_slot_1_and_a_circle_for_slot_2() -> void:
+	for id: StringName in [&"backfire", &"stand_down", &"ember", &"venom"]:
+		var view := CardView.make(CardCatalog.by_id(id))
+		add_child_autofree(view)
+		var badge: Figures.SlotBadge = _badge(view)
+		assert_not_null(badge, "%s has a slot badge" % id)
+		assert_eq(badge.slot, view.card.slot(), "%s badge matches its slot" % id)
+	assert_eq(UiStyle.slot_symbol(CardData.Slot.ONE), "star")
+	assert_eq(UiStyle.slot_symbol(CardData.Slot.TWO), "circle")
+
+
+func test_after_a_circle_card_the_other_circle_cards_go_dark() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	_set_hand(screen, [&"ember", &"backfire", &"venom", &"stand_down"])
+	assert_true(_live_hand(screen).all(func(v: CardView) -> bool: return not v.spent), "nothing spent yet")
+	assert_eq(screen.drop_card(0, DropZone.Kind.PLAYER, 1), "")
+	for view: CardView in _live_hand(screen):
+		var circle: bool = view.card.slot() == CardData.Slot.TWO
+		assert_eq(view.spent, circle, "%s spent" % view.card.id)
+		assert_eq(view.draggable, not circle, "%s draggable" % view.card.id)
+
+
+func test_clicking_a_spent_card_explains_instead_of_selecting() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	_set_hand(screen, [&"ember", &"venom"])
+	screen.drop_card(0, DropZone.Kind.PLAYER, 1)
+	var venom: CardView = _live_hand(screen)[0]
+	venom.clicked.emit(venom)
+	assert_eq(screen.selected_index, -1)
+	assert_string_contains(screen.message, "circle")
+
+
+func test_silenced_players_see_everything_dark_after_one_card() -> void:
+	var screen: MatchScreen = _screen(["human", "human"])
+	screen.confirm_pass()
+	screen.tc.state.turn_restrictions.append(TurnRestriction.ONE_CARD)
+	_set_hand(screen, [&"ember", &"backfire"])
+	screen.drop_card(0, DropZone.Kind.PLAYER, 1)
+	assert_true(_live_hand(screen).all(func(v: CardView) -> bool: return v.spent))

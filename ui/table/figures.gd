@@ -37,6 +37,36 @@ class PlayerFigure extends Control:
 			draw_line(Vector2(w / 2.0 + 10, 14), Vector2(w / 2.0 - 10, 30), ink, 2.0)
 
 
+## Slot marker in a card's corner: a star for slot 1 (traps and Joker cards), a
+## circle for slot 2 (attacks and effects).
+class SlotBadge extends Control:
+	var slot: CardData.Slot = CardData.Slot.TWO
+
+	func _init(p_slot: CardData.Slot, badge_size: float) -> void:
+		slot = p_slot
+		custom_minimum_size = Vector2(badge_size, badge_size)
+		size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		var center: Vector2 = size / 2.0
+		var radius: float = minf(size.x, size.y) / 2.0
+		var fill := Color(0.98, 0.95, 0.85)
+		var outline := Color(0.1, 0.08, 0.12)
+		if slot == CardData.Slot.ONE:
+			var points := PackedVector2Array()
+			for i: int in 10:
+				var r: float = radius if i % 2 == 0 else radius * 0.45
+				var angle: float = -PI / 2.0 + i * PI / 5.0
+				points.append(center + Vector2(cos(angle), sin(angle)) * r)
+			draw_colored_polygon(points, fill)
+			points.append(points[0])
+			draw_polyline(points, outline, 1.5)
+		else:
+			draw_circle(center, radius * 0.8, fill)
+			draw_arc(center, radius * 0.8, 0.0, TAU, 24, outline, 1.5)
+
+
 ## The Joker: a party-hatted host, tinted by the Joker's type.
 class JokerFigure extends Control:
 	var element: Element.Type = Element.Type.NORMAL
