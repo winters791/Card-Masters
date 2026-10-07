@@ -13,6 +13,8 @@ extends Bot
 const HOT_RISK: float = 0.7
 ## Extra value for knocking a player out.
 const KILL_BONUS: float = 30.0
+## Plays scoring within this of each other count as a tie.
+const TIE_EPSILON: float = 0.001
 ## Damage the bot takes counts this much more than damage it deals.
 const SELF_DAMAGE_WEIGHT: float = 1.5
 
@@ -31,15 +33,20 @@ func choose(tc: TurnController) -> Intent:
 				and state.draws_this_turn < Config.MAX_DRAWS_PER_TURN:
 			return Intents.DiscardCard.new(seat, _weakest_card(me.hand))
 
-	var best: Intent = null
 	# Ending the turn without a play is a skip and costs Heat; after a play it's free.
 	var best_score: float = 0.0 if not state.slots_played.is_empty() else -_heat_risk(state, Config.SKIP_HEAT)
+	var best: Array[Intent] = []
 	for play: Intent in LegalMoves.plays(tc):
 		var score: float = _score_play(state, play as Intents.PlayCard)
-		if score > best_score:
+		if score > best_score + TIE_EPSILON:
 			best_score = score
-			best = play
-	return best if best != null else Intents.EndTurn.new(seat)
+			best = [play]
+		elif absf(score - best_score) <= TIE_EPSILON and not best.is_empty():
+			best.append(play)
+	if best.is_empty():
+		return Intents.EndTurn.new(seat)
+	# Break ties at random: taking the first one would always pick on the lowest seat.
+	return best[rng.randi_range(0, best.size() - 1)]
 
 
 # --- Scoring ---------------------------------------------------------------------

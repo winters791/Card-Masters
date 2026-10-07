@@ -70,6 +70,8 @@ godot --headless --path . --check-only -s res://core/some_script.gd
 godot --headless --path . -s res://ai/simulate.gd -- --matches=1000 --players=4 --bots=greedy --seed=1
 #   --bots takes one name for every seat or a comma list per seat (greedy, random)
 #   --json=path / --csv=path also write the summary / one row per match
+#   Balance experiments (this run only): --set=STARTING_HP=250,JOKER_DAMAGE_PER_ROUND=15
+#   (any name in Config.TUNABLE), --damage-scale=0.5 (card damage), --dot-scale=0.5 (poison/burn)
 
 # Run the game
 godot --path .
@@ -83,7 +85,7 @@ Run the tests before every commit. Add a test for every rule and every card.
 
 ## Rule gaps to confirm with Uday before implementing
 
-None open right now. When you find a new one, list it here and raise it when you reach the relevant roadmap item.
+1. **Match length vs the round-10 Joker one-shot (Phase 5):** with today's numbers matches last ~4 rounds, not ~10. Raising HP fixes length but stops the Joker one-shotting by round 10. Options A–D are in `docs/playtests/2026-10-07-balance-pass-1.md`; waiting on Uday's pick before changing `core/config.gd` or card numbers.
 
 ## Git
 

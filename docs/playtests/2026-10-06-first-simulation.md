@@ -2,6 +2,8 @@
 
 Bots only, after Phase 3. GreedyBot is a rough heuristic player, so treat these as signals to check in human playtests, not verdicts.
 
+> **Correction (7 Oct):** the early-seat disadvantage below was a GreedyBot bug (ties always went to the lowest seat, so every bot ganged up on Player 1). With random tie-breaks seats are fair. See `2026-10-07-balance-pass-1.md`.
+
 Reproduce with:
 
 ```bash
