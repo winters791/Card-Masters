@@ -86,8 +86,8 @@ Placeholder-art UI on top of the rules core; 2–4 humans on one screen (bots ca
 
 ## Phase 5 — Playtest and balance
 
-- [ ] Run hotseat sessions; collect notes in `docs/playtests/`.
-- [ ] Tune with simulation + playtests: Joker +10/round, HP 100, card damage, Base Heat values, copy counts.
+- [ ] Run hotseat sessions; collect notes in `docs/playtests/` (template: `docs/playtests/TEMPLATE.md`).
+- [ ] Tune with simulation + playtests: Joker +10/round, HP 100, card damage, Base Heat values, copy counts. *(Simulation pass 1 done: `docs/playtests/2026-10-07-balance-pass-1.md`. The match-length options are waiting on Uday; the simulator can now override any number with `--set`, `--damage-scale` and `--dot-scale`.)*
 - [ ] Watch list from the design doc: Joker type-changer count, uncommon share of the deck, "Stand Down" chaining, last-seat advantage, Normal-type camping, turtling.
 - [ ] Prune cards that are unfun or dominant.
 
