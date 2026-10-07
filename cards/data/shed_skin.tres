@@ -13,6 +13,6 @@ rarity = 0
 mode_lock = 0
 effect_id = &"shed_skin"
 params = {
-"damage": 10
+"damage": 5
 }
-rules_text = "Change your own type, then deal 10 damage of your new type to the target."
+rules_text = "Change your own type, then deal 5 damage of your new type to the target."

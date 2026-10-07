@@ -13,6 +13,6 @@ rarity = 0
 mode_lock = 0
 effect_id = &"attack"
 params = {
-"damage": 10
+"damage": 5
 }
-rules_text = "10 Fire damage."
+rules_text = "5 Fire damage."

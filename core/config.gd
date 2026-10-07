@@ -10,9 +10,9 @@ extends RefCounted
 # Players (§2)
 const MIN_PLAYERS: int = 2
 const MAX_PLAYERS: int = 4
-static var STARTING_HP: int = 100
+static var STARTING_HP: int = 250
 ## Healing never takes a player above this.
-static var MAX_HP: int = 100
+static var MAX_HP: int = 250
 
 # Hand (§3)
 static var STARTING_HAND_SIZE: int = 7
@@ -60,6 +60,10 @@ const TUNABLE: Array[String] = [
 ]
 
 
+## Values written in this file, saved the first time a setting is overridden.
+static var _defaults: Dictionary[String, Variant] = {}
+
+
 ## Overrides one setting for the rest of this process (balance experiments only).
 ## STARTING_HP also moves the healing cap; COPIES_<RARITY> sets copies per card.
 ## Returns "" or why the override was refused.
@@ -68,9 +72,13 @@ static func override(setting: String, value: String) -> String:
 		return "Unknown or fixed setting: %s" % setting
 	if setting.begins_with("COPIES_"):
 		var rarity: String = setting.trim_prefix("COPIES_")
+		if not _defaults.has(setting):
+			_defaults[setting] = COPIES_BY_RARITY[CardData.Rarity[rarity]]
 		COPIES_BY_RARITY[CardData.Rarity[rarity]] = int(value)
 		return ""
 	var script: GDScript = load("res://core/config.gd")
+	if not _defaults.has(setting):
+		_defaults[setting] = script.get(setting)
 	match typeof(script.get(setting)):
 		TYPE_INT:
 			script.set(setting, int(value))
@@ -79,3 +87,12 @@ static func override(setting: String, value: String) -> String:
 	if setting == "STARTING_HP":
 		MAX_HP = int(value)
 	return ""
+
+
+## The value written in this file, even after an override (tests pin some settings).
+static func default_value(setting: String) -> Variant:
+	if _defaults.has(setting):
+		return _defaults[setting]
+	if setting.begins_with("COPIES_"):
+		return COPIES_BY_RARITY[CardData.Rarity[setting.trim_prefix("COPIES_")]]
+	return (load("res://core/config.gd") as GDScript).get(setting)

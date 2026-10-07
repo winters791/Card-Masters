@@ -13,6 +13,6 @@ rarity = 1
 mode_lock = 0
 effect_id = &"attack"
 params = {
-"damage": 20
+"damage": 10
 }
-rules_text = "20 Grass damage."
+rules_text = "10 Grass damage."

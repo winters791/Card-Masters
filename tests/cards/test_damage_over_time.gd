@@ -49,13 +49,13 @@ func test_venom_heat_has_no_direct_damage_bonus() -> void:
 	assert_eq(tc.state.player(0).heat, 2)
 
 
-func test_venom_ticks_five_for_three_round_ends_starting_this_round() -> void:
+func test_venom_ticks_three_for_three_round_ends_starting_this_round() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
 	Fixtures.play_and_end(tc, _card(&"venom"), 1)
 	_finish_rounds(tc, 1)
-	assert_eq(_ticks(tc, Status.POISON, 1), [5], "ticks at the end of the round it was applied")
+	assert_eq(_ticks(tc, Status.POISON, 1), [3], "ticks at the end of the round it was applied")
 	_finish_rounds(tc, 3)
-	assert_eq(_ticks(tc, Status.POISON, 1), [5, 5, 5], "then stops after 3")
+	assert_eq(_ticks(tc, Status.POISON, 1), [3, 3, 3], "then stops after 3")
 	assert_true(tc.state.player(1).poisons.is_empty())
 	assert_eq(Fixtures.events_of(tc, GameEvents.StatusEnded).size(), 1)
 
@@ -65,7 +65,7 @@ func test_venom_stacks() -> void:
 	Fixtures.play_and_end(tc, _card(&"venom"), 2)
 	Fixtures.play_and_end(tc, _card(&"venom"), 2)
 	_finish_rounds(tc, 1)
-	assert_eq(_ticks(tc, Status.POISON, 2), [5, 5])
+	assert_eq(_ticks(tc, Status.POISON, 2), [3, 3])
 	assert_eq(tc.state.player(2).poisons.size(), 2)
 
 
@@ -78,11 +78,11 @@ func test_collective_venom_poisons_everyone_including_the_player() -> void:
 
 # --- Scorch ----------------------------------------------------------------------
 
-func test_scorch_burns_ten_every_round_until_type_change() -> void:
+func test_scorch_burns_five_every_round_until_type_change() -> void:
 	var tc: TurnController = Fixtures.new_match(3)
 	Fixtures.play_and_end(tc, _card(&"scorch"), 1)
 	_finish_rounds(tc, 4)
-	assert_eq(_ticks(tc, Status.BURN, 1), [10, 10, 10, 10])
+	assert_eq(_ticks(tc, Status.BURN, 1), [5, 5, 5, 5])
 	assert_eq(tc.state.player(1).burns.size(), 1, "never expires on its own")
 
 
@@ -91,7 +91,7 @@ func test_scorch_stacks() -> void:
 	Fixtures.play_and_end(tc, _card(&"scorch"), 2)
 	Fixtures.play_and_end(tc, _card(&"scorch"), 2)
 	_finish_rounds(tc, 1)
-	assert_eq(_ticks(tc, Status.BURN, 2), [10, 10])
+	assert_eq(_ticks(tc, Status.BURN, 2), [5, 5])
 
 
 func test_changing_type_puts_out_every_burn() -> void:

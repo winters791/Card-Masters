@@ -83,9 +83,11 @@ In Claude Code cloud sessions, `.claude/hooks/session-start.sh` installs the pin
 
 Run the tests before every commit. Add a test for every rule and every card.
 
+Rules tests run at **100 HP**, not the design default of 250: `tests/support/pre_run.gd` (a GUT pre-run hook in `.gutconfig.json`) pins it so the test arithmetic stays readable. `Config.default_value()` still returns the values written in `core/config.gd`.
+
 ## Rule gaps to confirm with Uday before implementing
 
-1. **Match length vs the round-10 Joker one-shot (Phase 5):** with today's numbers matches last ~4 rounds, not ~10. Raising HP fixes length but stops the Joker one-shotting by round 10. Options A–D are in `docs/playtests/2026-10-07-balance-pass-1.md`; waiting on Uday's pick before changing `core/config.gd` or card numbers.
+None open right now. When you find a new one, list it here and raise it when you reach the relevant roadmap item.
 
 ## Git
 

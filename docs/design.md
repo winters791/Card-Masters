@@ -29,7 +29,7 @@ Cartoon fantasy in the spirit of Adventure Time: a bright, hand-drawn tabletop g
 
 ## 2. Players and types
 
-- **Players:** 2–4. **Starting HP:** 100 (starting point for playtesting).
+- **Players:** 2–4. **Starting HP:** 250 (balance pass 1, option B; still a starting point for playtesting).
 - **Win condition:** last player alive.
 - Each player has **one type**, always visible to everyone. **Everyone starts as Normal.**
 
@@ -116,7 +116,7 @@ Grass → Water → Fire → Grass (each beats the next), plus **Normal**, which
 - **Placement:** a trap on player X only watches X ("you" in the card text = X). A trap in the collective pool watches everyone and fires for the first player it applies to.
 - **Timing:** a trap fires the moment its trigger happens (Backfire mid-attack, Joker Deflect mid-Joker-attack). Its Heat lands for its owner right then, before its effect, so always before the Joker's hit.
 - **One-shot:** a trap fires once, then goes to the discard pile. Traps sitting on a player who is eliminated are discarded unfired.
-- **Healing** (Poison to Healing, Wellspring) never takes a player above 100 HP.
+- **Healing** (Poison to Healing, Wellspring) never takes a player above their starting HP (250).
 - Placing a trap on a player counts as playing a targeted card (Tripwire sees it).
 - When several copies of the same trap wait for the same thing, only the oldest fires; the others keep waiting.
 - A trap still fires after its owner is eliminated (no Heat lands then).
@@ -217,9 +217,9 @@ Players change the Joker's behaviour with Joker cards. Examples:
 ### Pacing (starting point for playtesting)
 
 - Typical turns ~30 seconds (the timer only caps a turn at 2 minutes) → ~2 minutes per round with 4 players → **~10 rounds** per match (rounds speed up as players drop out).
-- **Round 5 is the danger zone:** the Joker deals 50, or 100 at 2x, which is lethal against the wrong type.
-- **Round 10:** the Joker one-shots anyone at neutral.
-- **Card damage:** mostly 10–30. Big cards (~40) are rare, top-tier and 3 Base Heat.
+- **Round 5 is the danger zone:** the Joker deals 50, or 100 at 2x, which is 40% of a life bar against the wrong type.
+- **Round 10:** the Joker hits for 100 (~40% of a life bar at neutral, 80% at 2x). It no longer one-shots by round 10; the Joker is still the main threat (about 65% of eliminations in bot simulations). If matches feel long with people, grow the Joker to +15 a round.
+- **Card damage:** mostly 5–10. Big cards (~20) are rare, top-tier and 3 Base Heat. Card numbers were halved in balance pass 1 so cards chip and the Joker finishes (see `docs/playtests/2026-10-07-balance-pass-1.md`).
 
 ---
 
@@ -231,18 +231,18 @@ A first batch across seven families; everything stays in until playtesting prune
 
 | Card | Type | Base | Effect |
 |---|---|---|---|
-| Ember | Fire | 1 | 10 damage |
-| Thornlash | Grass | 2 | 20 damage |
-| Tidal Crash | Water | 2 | 20 damage |
-| Wildfire | Fire | 1 | 15 damage, **collective only**. A cheap way to flood the pool |
-| Cataclysm | Normal | 3 | 40 damage, **targeted only**. Rare |
+| Ember | Fire | 1 | 5 damage |
+| Thornlash | Grass | 2 | 10 damage |
+| Tidal Crash | Water | 2 | 10 damage |
+| Wildfire | Fire | 1 | 8 damage, **collective only**. A cheap way to flood the pool |
+| Cataclysm | Normal | 3 | 20 damage, **targeted only**. Rare |
 
 ### Damage over time (slot 2, effects)
 
 | Card | Base | Effect |
 |---|---|---|
-| Venom | 1 | Poison: 5 damage per round for 3 rounds (the round it's played counts as the first). Stacks |
-| Scorch | 1 | Burn: 10 per round until the target changes type. Stacks (two burns = 20 per round); changing type puts out all of them |
+| Venom | 1 | Poison: 3 damage per round for 3 rounds (the round it's played counts as the first). Stacks |
+| Scorch | 1 | Burn: 5 per round until the target changes type. Stacks (two burns = 10 per round); changing type puts out all of them |
 | Rot | 2 | The next time the target would resist a hit, the resist is halved (0.5x becomes 0.75x). Lasts until it triggers; doesn't stack |
 
 ### Type manipulation (slot 2, effects)
@@ -252,7 +252,7 @@ A first batch across seven families; everything stays in until playtesting prune
 | Type Swap | 2 | Swap your type with a target's. **Targeted only.** Fails entirely if either of you is Rooted |
 | Convert | 2 | Set a target's type to one of your choice. Collective: everyone becomes that type, you included |
 | Rooted | 2 | Target can't change type until the end of the next round (so it always covers their next turn) |
-| Shed Skin | 1 | Change your own type to a different one, then deal 10 damage **of your new type** to a target (+1 for direct damage). Collective: hits everyone, you included |
+| Shed Skin | 1 | Change your own type to a different one, then deal 5 damage **of your new type** to a target (+1 for direct damage). Collective: hits everyone, you included |
 
 - A type change on a **Rooted** player fails; the card is still played and still costs Heat. A Rooted player's Shed Skin hits with their current type.
 - Changing type puts out all burns (Scorch).
@@ -289,18 +289,18 @@ The printed numbers stand; how much Heat these give versus cost is a playtesting
 | Wild Card | 2 | Random target this round |
 | Invert | 2 | Targets the lowest-Heat player (everyone tied). Stays until replaced |
 | Ignite / Flood / Overgrow | 2 | Sets the Joker's type to Fire / Water / Grass |
-| Venom Fang | 2 | Every Joker hit also applies Venom's poison (5 × 3 rounds). Stacks, and stays for the rest of the match |
+| Venom Fang | 2 | Every Joker hit also applies Venom's poison (3 × 3 rounds). Stacks, and stays for the rest of the match |
 | Overcharge | 3 | +20 Joker damage this round only. Stacks |
 
 ### Traps (slot 1)
 
 | Card | Base | Trigger → effect |
 |---|---|---|
-| Poison to Healing | 1 | Someone stacks poison → it becomes healing instead (same amount per round, same rounds: Venom becomes heal 5 × 3, ticking in the poison step) |
+| Poison to Healing | 1 | Someone stacks poison → it becomes healing instead (same amount per round, same rounds: Venom becomes heal 3 × 3, ticking in the poison step) |
 | Joker Deflect | 2 | The Joker would hit you → it redirects 2 *living* seats anticlockwise (if that lands back on you, i.e. only 2 players left, it goes to the other player). You keep your Heat. The new target is really hit by the Joker (Heat reset, Venom Fang, Grudge), and a deflected hit can't be deflected again |
 | Backfire | 2 | The next targeted card that deals **direct damage** to you (Attacks, Shed Skin) → it hits its player instead; they still pay its Heat |
 | Tripwire | 1 | The next player to play a targeted card → they gain +3 Heat |
-| Type Snare | 2 | The next player to change type → they take 20 damage |
+| Type Snare | 2 | The next player to change type → they take 10 damage |
 | Grudge | 2 | You get hit by the Joker → the hottest *other* player (everyone tied) takes the same damage. The Grudge's own Heat lands first, so its owner can end up the hottest |
 | Wellspring | 1 | **Collective pool only.** A Water card enters the collective pool → all Water players heal 10 (after that card resolves) |
 

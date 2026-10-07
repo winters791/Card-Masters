@@ -13,6 +13,6 @@ rarity = 0
 mode_lock = 1
 effect_id = &"attack"
 params = {
-"damage": 15
+"damage": 8
 }
-rules_text = "15 Fire damage. Collective only: a cheap way to flood the pool."
+rules_text = "8 Fire damage. Collective only: a cheap way to flood the pool."

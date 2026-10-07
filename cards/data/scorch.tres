@@ -13,6 +13,6 @@ rarity = 0
 mode_lock = 0
 effect_id = &"burn"
 params = {
-"tick_damage": 10
+"tick_damage": 5
 }
-rules_text = "Burn: 10 damage at the end of each round until the target changes type. Stacks."
+rules_text = "Burn: 5 damage at the end of each round until the target changes type. Stacks."

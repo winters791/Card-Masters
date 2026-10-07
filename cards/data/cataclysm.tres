@@ -13,6 +13,6 @@ rarity = 3
 mode_lock = 2
 effect_id = &"attack"
 params = {
-"damage": 40
+"damage": 20
 }
-rules_text = "40 Normal damage. Targeted only."
+rules_text = "20 Normal damage. Targeted only."
