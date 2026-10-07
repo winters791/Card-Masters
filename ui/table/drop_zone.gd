@@ -34,8 +34,13 @@ func set_highlight(on: bool) -> void:
 
 
 func _restyle() -> void:
-	var border: Color = UiStyle.VALID_DROP_COLOR if highlighted else base_color.lightened(0.35)
-	add_theme_stylebox_override("panel", UiStyle.panel_style(base_color, border, 4 if highlighted else 2))
+	var border: Color = UiStyle.VALID_DROP_COLOR if highlighted else Color(base_color.lightened(0.45), 0.7)
+	var fill: Color = base_color.lerp(Color(UiStyle.VALID_DROP_COLOR, base_color.a), 0.18) if highlighted else base_color
+	var style := UiStyle.panel_style(fill, border, 3 if highlighted else 1, 8, 14)
+	if highlighted:
+		style.shadow_color = Color(UiStyle.VALID_DROP_COLOR, 0.35)
+		style.shadow_size = 10
+	add_theme_stylebox_override("panel", style)
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:

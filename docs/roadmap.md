@@ -86,7 +86,7 @@ Placeholder-art UI on top of the rules core; 2–4 humans on one screen (bots ca
 
 ## Phase 5 — Playtest and balance
 
-- [ ] Run hotseat sessions; collect notes in `docs/playtests/` (template: `docs/playtests/TEMPLATE.md`).
+- [ ] Run hotseat sessions; collect notes in `docs/playtests/` (template: `docs/playtests/TEMPLATE.md`). *(Playtest aids: bot turns wait for a "Play Player N's turn" button so every bot move can be watched; an "Auto-play bots" toggle lets them run on their own.)*
 - [ ] Tune with simulation + playtests: Joker +10/round, HP 100, card damage, Base Heat values, copy counts. *(Simulation pass 1 done: `docs/playtests/2026-10-07-balance-pass-1.md`. Uday picked option B: HP 250, card damage and poison/burn ticks halved, ~8.5 rounds in bot matches. Next: check it with human playtests. The simulator can override any number with `--set`, `--damage-scale` and `--dot-scale`.)*
 - [ ] Watch list from the design doc: Joker type-changer count, uncommon share of the deck, "Stand Down" chaining, last-seat advantage, Normal-type camping, turtling.
 - [ ] Prune cards that are unfun or dominant.
@@ -107,8 +107,8 @@ Placeholder-art UI on top of the rules core; 2–4 humans on one screen (bots ca
 
 - [ ] Cartoon fantasy art direction (original art, Adventure Time–inspired feel, not copied).
 - [ ] Types as terrain on each player's side; hologram-style card effects.
-- [ ] Guillame El Cid (placeholder name), the drama-loving host: animations, voice lines.
-- [ ] Audio, juice, onboarding/tutorial.
+- [ ] Guillame El Cid (placeholder name), the drama-loving host: animations, voice lines. *(Early start, Uday's request: a placeholder 3D jester built from primitive meshes (`ui/table/joker_3d.gd`) with an idle bob, an "eyeing" animation that turns toward the players it would hit, and a wind-up-and-lunge attack.)*
+- [ ] Audio, juice, onboarding/tutorial. *(Early start: every event is animated by `ui/table/fx_layer.gd`: cards fly to their pool with a burst by type, damage and heal numbers float up, the Joker's attack beams to its targets, round and elimination banners. The table, cards and setup screen were restyled with drawn placeholders.)*
 
 ---
 
